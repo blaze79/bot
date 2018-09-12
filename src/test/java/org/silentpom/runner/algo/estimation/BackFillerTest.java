@@ -36,6 +36,8 @@ public class BackFillerTest {
             );
             filler.estimation(info.getGold().get(0));
             filler.getMask().print();
+            String field = filler.getResult().getStringView();
+            System.out.println(field);
 
             assertEquals( filler.getHolder().isHeroFound(), true);
             assertEquals( filler.getHolder().getBotsFound(), 1);
@@ -67,6 +69,8 @@ public class BackFillerTest {
             );
             filler.estimation(info.getGold().get(info.getGold().size()-1));
             filler.getMask().print();
+            String field = filler.getResult().getStringView();
+            System.out.println(field);
 
             assertEquals( filler.getHolder().isHeroFound(), true);
             assertEquals( filler.getHolder().getBotsFound(), 0);
@@ -98,6 +102,9 @@ public class BackFillerTest {
             );
             filler.estimation(info.getGold().get(info.getGold().size()-1));
             filler.getMask().print();
+            String field = filler.getResult().getStringView();
+            System.out.println(field);
+
 
             assertEquals( filler.getHolder().isHeroFound(), true);
             assertEquals( filler.getHolder().getBotsFound(), 0);

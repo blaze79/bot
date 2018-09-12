@@ -91,7 +91,7 @@ public class FillerState {
                 generation + command.tickCount()
         );
         child.delayed = true;
-        child.delayCounter = command.tickCount() - 1;
+        child.delayCounter = command.tickCount();
 
         return child;
     }
@@ -118,9 +118,10 @@ public class FillerState {
     }
 
     public boolean makeDelayedStep() {
-        if(delayed && delayCounter>0) {
+        if (delayed) {
             delayCounter--;
-            return (delayCounter==0);
+            delayed = (delayCounter > 0);
+            return !delayed;
         }
 
         return true;
