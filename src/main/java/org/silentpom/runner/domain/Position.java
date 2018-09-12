@@ -1,5 +1,7 @@
 package org.silentpom.runner.domain;
 
+import org.silentpom.runner.domain.state.PositionsCache;
+
 /**
  * Created by Vlad on 09.09.2018.
  */
@@ -21,19 +23,19 @@ public class Position {
     }
 
     public Position left() {
-        return new Position(row, column-1);
+        return PositionsCache.make(row, column-1);
     }
 
     public Position right() {
-        return new Position(row, column+1);
+        return PositionsCache.make(row, column+1);
     }
 
     public Position up() {
-        return new Position(row - 1, column);
+        return PositionsCache.make(row - 1, column);
     }
 
     public Position down() {
-        return new Position(row +1, column);
+        return PositionsCache.make(row + 1, column);
     }
 
     @Override
@@ -54,7 +56,4 @@ public class Position {
         return result;
     }
 
-    public static Position make(int row, int column) {
-        return new Position(row, column);
-    }
 }

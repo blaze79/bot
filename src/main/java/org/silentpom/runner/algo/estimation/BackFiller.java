@@ -127,11 +127,12 @@ public class BackFiller {
 
     private void swapBorders() {
 
-        System.out.printf("Active border: %d New generation %d of them delayed %d \n",
-                currentBorder.size(),
-                newGeneration.size(),
-                newGeneration.stream().filter( x -> x.isDelayed()).count()
-        );
+//        System.out.printf("Active border: %d New generation %d of them delayed %d \n",
+//                currentBorder.size(),
+//                newGeneration.size(),
+//                newGeneration.stream().filter( x -> x.isDelayed()).count()
+//        );
+
         List<FillerState> temp = currentBorder;
         currentBorder = newGeneration;
         newGeneration = temp;

@@ -1,5 +1,7 @@
 package org.silentpom.runner.algo.estimation.policy;
 
+import org.silentpom.runner.domain.Constants;
+
 /**
  * Created by Vlad on 10.09.2018.
  * was linear become exponential
@@ -7,7 +9,7 @@ package org.silentpom.runner.algo.estimation.policy;
 
 public class LinearWeightPolicy implements WeightPolicy {
     double weight;
-    double rate = 0.97;
+    double rate = Constants.RATE_INFLATION;
 
     public LinearWeightPolicy(double weight) {
         this.weight = weight;

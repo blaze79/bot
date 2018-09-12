@@ -4,6 +4,7 @@ import org.silentpom.runner.algo.estimation.commands.MoveCommandsSet;
 import org.silentpom.runner.domain.Position;
 import org.silentpom.runner.domain.maps.FullMapInfo;
 import org.silentpom.runner.domain.maps.SimpleMap;
+import org.silentpom.runner.domain.state.PositionsCache;
 import org.testng.annotations.Test;
 
 import java.io.InputStream;
@@ -38,7 +39,7 @@ public class MoveCommandsSetTest {
             assertTrue(bots.size() == 2);
 
             List<Position> empty = MoveCommandsSet.MOVE_COMMANDS.getPreviousPoints(
-                    Position.make(3, 27),
+                    PositionsCache.make(3, 27),
                     info.getClearMap()
             );
             assertTrue(empty.size() == 1);

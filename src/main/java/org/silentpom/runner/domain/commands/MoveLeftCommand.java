@@ -27,4 +27,9 @@ public class MoveLeftCommand implements MoveCommand {
     public String getCode() {
         return "LEFT";
     }
+
+    @Override
+    public Position moveOnly(Position x) {
+        return x.left();
+    }
 }

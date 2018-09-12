@@ -21,4 +21,9 @@ public class MoveUpCommand implements MoveCommand {
     public String getCode() {
         return "UP";
     }
+
+    @Override
+    public Position moveOnly(Position x) {
+        return x.up();
+    }
 }

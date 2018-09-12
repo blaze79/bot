@@ -52,6 +52,14 @@ public class DoubleMask {
         setValue(pos.getRow(), pos.getColumn(), data);
     }
 
+    public void addWithWeight(DoubleMask mask, double weight) {
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < columns; ++j) {
+                values[i][j] = values[i][j] + mask.values[i][j] * weight;
+            }
+        }
+    }
+
     public void print() {
         System.out.println();
         for (int i = 0; i < rows; ++i) {

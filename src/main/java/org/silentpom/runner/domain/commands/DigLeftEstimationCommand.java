@@ -37,4 +37,9 @@ public class DigLeftEstimationCommand implements MoveCommand {
     public int tickCount() {
         return 4;
     }
+
+    @Override
+    public Position moveOnly(Position x) {
+        return x;
+    }
 }

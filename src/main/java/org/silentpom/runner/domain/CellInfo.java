@@ -1,6 +1,6 @@
 package org.silentpom.runner.domain;
 
-import org.silentpom.runner.domain.CellType;
+import org.silentpom.runner.domain.state.PositionsCache;
 
 /**
  * Created by Vlad on 09.09.2018.
@@ -11,7 +11,7 @@ public class CellInfo {
 
     public CellInfo(int row, int column, CellType type) {
         this.type = type;
-        this.position = Position.make(row, column);
+        this.position = PositionsCache.make(row, column);
     }
 
     public CellInfo(Position position, CellType type) {

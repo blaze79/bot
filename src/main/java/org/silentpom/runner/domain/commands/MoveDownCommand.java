@@ -23,4 +23,9 @@ public class MoveDownCommand implements MoveCommand {
     public String getCode() {
         return "DOWN";
     }
+
+    @Override
+    public Position moveOnly(Position x) {
+        return x.down();
+    }
 }

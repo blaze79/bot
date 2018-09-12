@@ -25,4 +25,9 @@ public class FallingCommand implements MoveCommand {
     public String getCode() {
         return "FALLLLING";
     }
+
+    @Override
+    public Position moveOnly(Position x) {
+        return x.down();
+    }
 }
