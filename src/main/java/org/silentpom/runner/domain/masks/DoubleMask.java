@@ -1,7 +1,10 @@
 package org.silentpom.runner.domain.masks;
 
 import org.silentpom.runner.domain.Position;
+import org.silentpom.runner.domain.state.PositionsCache;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.DoubleStream;
 import java.util.stream.Stream;
 
@@ -125,6 +128,23 @@ public class DoubleMask {
             builder.append('\n');
         }
         return builder.toString();
+    }
+
+    public List<Position> findMaximum() {
+        List<Position> maxx = new ArrayList<>();
+        double gap = maxValue()/16;
+        for (int i = 1; i < rows-1; ++i) {
+            for (int j = 1; j < columns-1; ++j) {
+                if(values[i][j] > gap) {
+                    double val = values[i][j];
+                   if(val >= values[i-1][j] && val >= values[i+1][j] && val >= values[i][j-1] && val >= values[i][j+1]) {
+                       maxx.add(PositionsCache.make(i, j));
+                   }
+                }
+            }
+        }
+
+        return maxx;
     }
 
 }

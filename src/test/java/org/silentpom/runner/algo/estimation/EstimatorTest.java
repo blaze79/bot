@@ -1,5 +1,6 @@
 package org.silentpom.runner.algo.estimation;
 
+import org.silentpom.runner.domain.Position;
 import org.silentpom.runner.domain.maps.FullMapInfo;
 import org.silentpom.runner.domain.maps.SimpleMap;
 import org.silentpom.runner.domain.masks.DoubleMask;
@@ -7,6 +8,7 @@ import org.testng.annotations.Test;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.testng.Assert.*;
@@ -30,6 +32,12 @@ public class EstimatorTest {
             DoubleMask estimation = estimator.estimate(info);
 
             System.out.println(estimation.getStringView());
+
+            List<Position> maximum = estimation.findMaximum();
+            for(Position pos: maximum) {
+                System.out.printf("max %s: row %d col %d weight %f\n", simpleMap.getCell(pos), pos.getRow(), pos.getColumn(), estimation.getChecked(pos));
+            }
+
         }
     }
 
