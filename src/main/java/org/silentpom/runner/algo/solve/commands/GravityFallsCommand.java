@@ -27,8 +27,9 @@ public class GravityFallsCommand implements GameCommand {
             return false;
         }
 
-        Position down = result.getPosition().down();
-        if (map.getCell(down).canStayOn()) {
+        Position down = x.down();
+        CellType downCell = map.getCell(down);
+        if (downCell.canStayOn()) {
             return false;
         }
 

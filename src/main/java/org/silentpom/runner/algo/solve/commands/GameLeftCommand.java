@@ -7,15 +7,20 @@ import org.silentpom.runner.domain.maps.CommonMap;
 /**
  * Created by Vlad on 09.09.2018.
  */
-public class MoveRightCommand extends MoveLeftCommand {
+public class GameLeftCommand extends BaseGameCommand {
 
     @Override
     public String getCode() {
-        return "RIGHT";
+        return "LEFT";
     }
 
     @Override
     public Position moveOnly(Position x) {
-        return x.right();
+        return x.left();
+    }
+
+    @Override
+    protected boolean hasConditionToStartMove(CellType cellType, CellType newType, boolean canKill) {
+        return true;
     }
 }
