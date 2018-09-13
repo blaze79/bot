@@ -22,8 +22,4 @@ public class MoveUpCommand implements MoveCommand {
         return "UP";
     }
 
-    @Override
-    public Position moveOnly(Position x) {
-        return x.up();
-    }
 }

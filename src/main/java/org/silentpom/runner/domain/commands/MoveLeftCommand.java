@@ -28,8 +28,5 @@ public class MoveLeftCommand implements MoveCommand {
         return "LEFT";
     }
 
-    @Override
-    public Position moveOnly(Position x) {
-        return x.left();
-    }
+
 }

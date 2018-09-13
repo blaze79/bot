@@ -25,4 +25,22 @@ public class DigRightCommand implements GameCommand {
     public Position moveOnly(Position x) {
         return x;
     }
+
+    @Override
+    public boolean moveInGame(CommonMap map, CommandResult result, boolean canKill) {
+        Position position = result.getPosition();
+        Position side = position.right();
+
+        CellType sideCell = map.getCell(side);
+        if (sideCell == CellType.NONE) {
+            Position down = side.down();
+            CellType downCell = map.getCell(down);
+            if (downCell == CellType.BRICK) {
+                result.setHole(down);
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

@@ -38,8 +38,4 @@ public class DigRightEstimationCommand implements MoveCommand {
         return 4;
     }
 
-    @Override
-    public Position moveOnly(Position x) {
-        return x;
-    }
 }

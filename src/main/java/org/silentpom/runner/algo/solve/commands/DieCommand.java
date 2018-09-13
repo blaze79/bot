@@ -22,4 +22,9 @@ public class DieCommand implements GameCommand {
     public boolean isDead() {
         return true;
     }
+
+    @Override
+    public boolean moveInGame(CommonMap map, CommandResult result, boolean canKill) {
+        return true;
+    }
 }

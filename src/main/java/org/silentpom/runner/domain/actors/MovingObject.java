@@ -1,5 +1,6 @@
 package org.silentpom.runner.domain.actors;
 
+import org.silentpom.runner.algo.solve.commands.GameCommand;
 import org.silentpom.runner.domain.Position;
 import org.silentpom.runner.domain.commands.MoveCommand;
 
@@ -10,17 +11,17 @@ import java.util.List;
  * Created by Vlad on 12.09.2018.
  */
 public abstract class MovingObject extends CellObject {
-    List<MoveCommand> commandStack = new ArrayList<>();
+    List<GameCommand> commandStack = new ArrayList<>();
 
     public MovingObject(Position position) {
         super(position);
     }
 
-    public void startNewTick(MoveCommand command) {
+    public void startNewTick(GameCommand command) {
         commandStack.add(command);
     }
 
-    public void changeLastCommand(MoveCommand command) {
+    public void changeLastCommand(GameCommand command) {
         commandStack.set(commandStack.size() -1, command);
     }
 
@@ -31,7 +32,7 @@ public abstract class MovingObject extends CellObject {
     @Override
     public Position position(int time) {
         Position pos = startPosition();
-        for(MoveCommand command: commandStack) {
+        for(GameCommand command: commandStack) {
             pos = command.moveOnly(pos);
         }
         return pos;

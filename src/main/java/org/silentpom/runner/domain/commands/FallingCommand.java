@@ -26,8 +26,5 @@ public class FallingCommand implements MoveCommand {
         return "FALLLLING";
     }
 
-    @Override
-    public Position moveOnly(Position x) {
-        return x.down();
-    }
+
 }

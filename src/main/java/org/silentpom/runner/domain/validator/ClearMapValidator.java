@@ -14,6 +14,6 @@ public class ClearMapValidator extends BasicValidator {
     @Override
     public boolean isPositionValidImpl(Position pos, CommonMap map) {
         CellType cell = map.getCell(pos);
-        return  isFreeCell(cell.getCategory());
+        return  cell.isFreeCell();
     }
 }

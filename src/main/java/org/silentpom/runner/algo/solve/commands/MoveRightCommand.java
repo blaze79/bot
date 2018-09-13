@@ -7,7 +7,7 @@ import org.silentpom.runner.domain.maps.CommonMap;
 /**
  * Created by Vlad on 09.09.2018.
  */
-public class MoveRightCommand implements GameCommand {
+public class MoveRightCommand extends MoveLeftCommand {
 
     @Override
     public String getCode() {

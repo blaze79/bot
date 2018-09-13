@@ -18,4 +18,21 @@ public class GravityFallsCommand implements GameCommand {
     public Position moveOnly(Position x) {
         return x.down();
     }
+
+    @Override
+    public boolean moveInGame(CommonMap map, CommandResult result, boolean canKill) {
+        Position x = result.getPosition();
+        CellType cell = map.getCell(x);
+        if (cell == CellType.LADDER || cell == CellType.PIPE) {
+            return false;
+        }
+
+        Position down = result.getPosition().down();
+        if (map.getCell(down).canStayOn()) {
+            return false;
+        }
+
+        result.setPosition(down);
+        return true;
+    }
 }

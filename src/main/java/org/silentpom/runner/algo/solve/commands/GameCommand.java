@@ -8,6 +8,16 @@ import org.silentpom.runner.domain.maps.CommonMap;
  */
 public interface GameCommand {
 
+    /**
+     * reduce memory consumption here
+     * @param x
+     * @param map
+     * @param result
+     * @param canKill
+     * @return
+     */
+    boolean moveInGame(CommonMap map, CommandResult result, boolean canKill);
+
     String getCode();
 
     Position moveOnly(Position x);

@@ -11,13 +11,7 @@ public interface MoveCommand {
 
     String getCode();
 
-    Position moveOnly(Position x);
-
     default int tickCount() {
         return 1;
     }
-
-    default boolean isDead() {
-        return false;
-    };
 }

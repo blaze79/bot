@@ -27,8 +27,5 @@ public class MoveRightCommand implements MoveCommand {
         return "RIGHT";
     }
 
-    @Override
-    public Position moveOnly(Position x) {
-        return x.right();
-    }
+
 }

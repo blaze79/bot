@@ -24,8 +24,4 @@ public class MoveDownCommand implements MoveCommand {
         return "DOWN";
     }
 
-    @Override
-    public Position moveOnly(Position x) {
-        return x.down();
-    }
 }

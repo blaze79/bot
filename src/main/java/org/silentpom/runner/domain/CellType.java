@@ -1,9 +1,8 @@
 package org.silentpom.runner.domain;
 
-import javafx.scene.control.Cell;
-
 import java.util.HashMap;
 import java.util.Map;
+
 
 /**
  * Created by Vlad on 09.09.2018.
@@ -126,11 +125,18 @@ public enum CellType {
             return false;
         }
 
-        if(this == PIPE) {
+        if (this == PIPE) {
             return false;
         }
 
         return true;
+    }
+
+    public boolean isFreeCell() {
+        if (category == CellCategory.HOLE) {
+            return !(this == PIT_FILL_4);
+        }
+        return (category == CellCategory.FREE || category == CellCategory.STAIRS || category == CellCategory.GOLD);
     }
 
 }
