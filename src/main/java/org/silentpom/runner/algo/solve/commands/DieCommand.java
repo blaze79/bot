@@ -6,11 +6,7 @@ import org.silentpom.runner.domain.maps.CommonMap;
 /**
  * Created by Vlad on 09.09.2018.
  */
-public class DieCommand implements MoveCommand {
-    @Override
-    public Position moveCommand(Position x, CommonMap map) {
-        return x;
-    }
+public class DieCommand implements GameCommand {
 
     @Override
     public String getCode() {

@@ -9,11 +9,11 @@ public class DoNothingCommand implements GameCommand {
 
     @Override
     public String getCode() {
-        return "FALLLLING";
+        return "WAIT";
     }
 
     @Override
     public Position moveOnly(Position x) {
-        return x.down();
+        return x;
     }
 }

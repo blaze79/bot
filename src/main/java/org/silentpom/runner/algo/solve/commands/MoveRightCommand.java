@@ -7,20 +7,7 @@ import org.silentpom.runner.domain.maps.CommonMap;
 /**
  * Created by Vlad on 09.09.2018.
  */
-public class MoveRightCommand implements MoveCommand {
-
-    @Override
-    public Position moveCommand(Position x, CommonMap map) {
-        if (map.getCell(x) == CellType.LADDER || map.getCell(x) == CellType.PIPE) {
-            return x.right();
-        }
-
-        if (map.getCell(x.down()).canStayOn()) {
-            return x.right();
-        }
-
-        return null;
-    }
+public class MoveRightCommand implements GameCommand {
 
     @Override
     public String getCode() {

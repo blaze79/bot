@@ -15,27 +15,10 @@ import org.silentpom.runner.domain.maps.CommonMap;
  *
  */
 public class DigLeftCommand implements GameCommand {
-    @Override
-    public Position moveCommand(Position x, CommonMap map) {
-        Position left = x.left();
-        if (map.getCell(left) == CellType.NONE) {
-            Position leftDown = left.down();
-            if(map.getCell(leftDown) == CellType.BRICK || map.getCell(leftDown).getCategory() == CellCategory.HOLE) {
-                return leftDown.down();
-            }
-        }
-
-        return null;
-    }
 
     @Override
     public String getCode() {
-        return "DIG LEFT(.. LEFT DOWN DOWN)";
-    }
-
-    @Override
-    public int tickCount() {
-        return 4;
+        return "DIG LEFT";
     }
 
     @Override
