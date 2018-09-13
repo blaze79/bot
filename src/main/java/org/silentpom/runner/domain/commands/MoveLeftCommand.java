@@ -1,5 +1,7 @@
 package org.silentpom.runner.domain.commands;
 
+import org.silentpom.runner.algo.solve.commands.GameCommand;
+import org.silentpom.runner.algo.solve.commands.GameLeftCommand;
 import org.silentpom.runner.domain.CellCategory;
 import org.silentpom.runner.domain.CellType;
 import org.silentpom.runner.domain.Position;
@@ -28,5 +30,8 @@ public class MoveLeftCommand implements MoveCommand {
         return "LEFT";
     }
 
-
+    @Override
+    public GameCommand toGameCommand() {
+        return new GameLeftCommand();
+    }
 }

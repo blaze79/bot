@@ -1,5 +1,7 @@
 package org.silentpom.runner.domain.commands;
 
+import org.silentpom.runner.algo.solve.commands.GameCommand;
+import org.silentpom.runner.algo.solve.commands.GameUpCommand;
 import org.silentpom.runner.domain.CellType;
 import org.silentpom.runner.domain.Position;
 import org.silentpom.runner.domain.maps.CommonMap;
@@ -22,4 +24,8 @@ public class MoveUpCommand implements MoveCommand {
         return "UP";
     }
 
+    @Override
+    public GameCommand toGameCommand() {
+        return new GameUpCommand();
+    }
 }

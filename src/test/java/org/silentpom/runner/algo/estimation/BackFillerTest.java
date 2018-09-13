@@ -1,6 +1,9 @@
 package org.silentpom.runner.algo.estimation;
 
 import org.silentpom.runner.algo.estimation.policy.LinearWeightPolicy;
+import org.silentpom.runner.algo.solve.commands.CommandResult;
+import org.silentpom.runner.algo.solve.commands.GameCommand;
+import org.silentpom.runner.domain.Position;
 import org.silentpom.runner.domain.maps.FullMapInfo;
 import org.silentpom.runner.domain.maps.SimpleMap;
 import org.silentpom.runner.replay.Replayer;
@@ -8,6 +11,8 @@ import org.testng.annotations.Test;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.testng.Assert.*;
@@ -39,13 +44,37 @@ public class BackFillerTest {
             String field = filler.getResult().getStringView();
             System.out.println(field);
 
-            assertEquals( filler.getHolder().isHeroFound(), true);
-            assertEquals( filler.getHolder().getBotsFound(), 1);
+            assertEquals(filler.getHolder().isHeroFound(), true);
+            assertEquals(filler.getHolder().getBotsFound(), 1);
 
             filler.getHolder().getHeroState().print();
 
+            List<FillerState> stateChain = filler.getHolder().getHeroState().asList();
+
+            List<Position> directChain = new ArrayList<>();
+            directChain.add(filler.getHolder().getHeroState().getPosition());
+
+            CommandResult commandResult = new CommandResult();
+            for (FillerState state : stateChain) {
+                if(state.getCommand() == null) {
+                    break;
+                }
+                commandResult.resetPosition(state.getPosition());
+                GameCommand gameCommand = state.getCommand().toGameCommand();
+
+                System.out.printf("Doing step %s\n", gameCommand.getCode());
+
+                boolean res = gameCommand.moveInGame(info.getClearMap(), commandResult, false);
+                assertTrue(res);
+
+                directChain.add(commandResult.getPosition());
+                assertEquals(state.getParent().getPosition(), commandResult.getPosition());
+            }
+
+
             Replayer replayer = new Replayer();
-            replayer.replay(info.getClearMap(), filler.getHolder().getHeroState().asList());
+            //replayer.replay(info.getClearMap(), stateChain);
+            replayer.replayPositions(info.getClearMap(), directChain);
         }
     }
 
@@ -67,13 +96,13 @@ public class BackFillerTest {
                     info.getBots(),
                     info.getHero()
             );
-            filler.estimation(info.getGold().get(info.getGold().size()-1));
+            filler.estimation(info.getGold().get(info.getGold().size() - 1));
             filler.getMask().print();
             String field = filler.getResult().getStringView();
             System.out.println(field);
 
-            assertEquals( filler.getHolder().isHeroFound(), true);
-            assertEquals( filler.getHolder().getBotsFound(), 0);
+            assertEquals(filler.getHolder().isHeroFound(), true);
+            assertEquals(filler.getHolder().getBotsFound(), 0);
 
             filler.getHolder().getHeroState().print();
 
@@ -100,14 +129,14 @@ public class BackFillerTest {
                     info.getBots(),
                     info.getHero()
             );
-            filler.estimation(info.getGold().get(info.getGold().size()-1));
+            filler.estimation(info.getGold().get(info.getGold().size() - 1));
             filler.getMask().print();
             String field = filler.getResult().getStringView();
             System.out.println(field);
 
 
-            assertEquals( filler.getHolder().isHeroFound(), true);
-            assertEquals( filler.getHolder().getBotsFound(), 0);
+            assertEquals(filler.getHolder().isHeroFound(), true);
+            assertEquals(filler.getHolder().getBotsFound(), 0);
 
             filler.getHolder().getHeroState().print();
 

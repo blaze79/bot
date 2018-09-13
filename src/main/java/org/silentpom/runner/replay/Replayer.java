@@ -2,6 +2,7 @@ package org.silentpom.runner.replay;
 
 import org.silentpom.runner.algo.estimation.FillerState;
 import org.silentpom.runner.domain.CellType;
+import org.silentpom.runner.domain.Position;
 import org.silentpom.runner.domain.maps.ClearMap;
 import org.silentpom.runner.domain.maps.SimpleMap;
 import org.slf4j.Logger;
@@ -28,6 +29,21 @@ public class Replayer {
             if (state.getCommand() != null) {
                 waitCommand(state.getCommand().tickCount());
             }
+        }
+        LOGGER.info("End of show");
+    }
+
+    public void replayPositions(ClearMap map, List<Position> states) {
+        LOGGER.info("Lets the show begin");
+        for (Position state : states) {
+            SimpleMap stepMap = SimpleMap.fromClearMap(map);
+            stepMap.setCell(
+                    state.getRow(),
+                    state.getColumn(),
+                    CellType.HERO_LEFT
+            );
+            LOGGER.info(stepMap.getStringView());
+            waitCommand(1);
         }
         LOGGER.info("End of show");
     }
