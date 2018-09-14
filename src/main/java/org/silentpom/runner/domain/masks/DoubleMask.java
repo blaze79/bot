@@ -149,7 +149,12 @@ public class DoubleMask {
 
     public boolean checkLocalMaximum(Position pos) {
         double val = getChecked(pos);
-        return val >= getChecked(pos.left()) && val >= getChecked(pos.right()) && val >= getChecked(pos.up()) && val >= getChecked(pos.down());
+        double maxValue = Stream.of(
+                pos.left(), pos.right(), pos.up(), pos.down(), pos.left(),
+                pos.left().up(), pos.left().down(), pos.right().up(), pos.right().down()
+        ).mapToDouble(x -> getChecked(x)).max().orElse(0);
+
+        return val>= maxValue;
     }
 
 }
