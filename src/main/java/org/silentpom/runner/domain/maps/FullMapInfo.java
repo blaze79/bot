@@ -30,6 +30,10 @@ public class FullMapInfo {
         return hero;
     }
 
+    public void fakeHero(Position hero) {
+        this.hero = hero;
+    }
+
     public List<Position> getBots() {
         return bots;
     }

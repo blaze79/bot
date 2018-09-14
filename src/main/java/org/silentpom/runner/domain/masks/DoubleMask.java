@@ -67,7 +67,7 @@ public class DoubleMask {
         System.out.println();
         for (int i = 0; i < rows; ++i) {
             for (int j = 0; j < columns; ++j) {
-                System.out.printf("%4.1f\t",values[i][j]);
+                System.out.printf("%4.1f\t", values[i][j]);
             }
             System.out.println();
         }
@@ -103,18 +103,18 @@ public class DoubleMask {
     }
 
     private double maxValue() {
-        return Stream.of(values).flatMapToDouble( row -> DoubleStream.of(row)).max().orElse(0);
+        return Stream.of(values).flatMapToDouble(row -> DoubleStream.of(row)).max().orElse(0);
     }
 
     private int mapToInt(int maxInt, double maxDouble, double value) {
-        if( value == 0.0) {
+        if (value == 0.0) {
             return -1;
         }
-        return (int) Math.floor(value/maxDouble*maxInt + 0.5);
+        return (int) Math.floor(value / maxDouble * maxInt + 0.5);
     }
 
     public String getStringView() {
-        StringBuilder builder = new StringBuilder((rows + 2)*(columns+5));
+        StringBuilder builder = new StringBuilder((rows + 2) * (columns + 5));
         double max = maxValue();
 
         for (int i = 0; i < rows; ++i) {
@@ -132,19 +132,24 @@ public class DoubleMask {
 
     public List<Position> findMaximum() {
         List<Position> maxx = new ArrayList<>();
-        double gap = maxValue()/16;
-        for (int i = 1; i < rows-1; ++i) {
-            for (int j = 1; j < columns-1; ++j) {
-                if(values[i][j] > gap) {
+        double gap = maxValue() / 16;
+        for (int i = 1; i < rows - 1; ++i) {
+            for (int j = 1; j < columns - 1; ++j) {
+                if (values[i][j] > gap) {
                     double val = values[i][j];
-                   if(val >= values[i-1][j] && val >= values[i+1][j] && val >= values[i][j-1] && val >= values[i][j+1]) {
-                       maxx.add(PositionsCache.make(i, j));
-                   }
+                    if (val >= values[i - 1][j] && val >= values[i + 1][j] && val >= values[i][j - 1] && val >= values[i][j + 1]) {
+                        maxx.add(PositionsCache.make(i, j));
+                    }
                 }
             }
         }
 
         return maxx;
+    }
+
+    public boolean checkLocalMaximum(Position pos) {
+        double val = getChecked(pos);
+        return val >= getChecked(pos.left()) && val >= getChecked(pos.right()) && val >= getChecked(pos.up()) && val >= getChecked(pos.down());
     }
 
 }
