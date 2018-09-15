@@ -22,17 +22,17 @@ public class BackFiller {
     List<FillerState> currentBorder = new ArrayList<>(100);
     List<FillerState> newGeneration = new ArrayList<>(100);
     ClearMap clearMap;
-    HeroBotHolder holder;
+    FillerResultHolder holder;
 
     public BackFiller(ClearMap clearMap, WeightPolicy policy, List<Position> bots, Position hero) {
         mask = new BitMask(clearMap.rows(), clearMap.columns());
         result = new DoubleMask(clearMap.rows(), clearMap.columns());
         this.clearMap = clearMap;
         this.policy = policy;
-        holder = new HeroBotHolder(bots, hero);
+        holder = new FillerResultHolder(bots, hero, mask, result);
     }
 
-    public DoubleMask estimation(Position start) {
+    public FillerResultHolder estimation(Position start) {
         currentBorder.clear();
         newGeneration.clear();
 
@@ -46,7 +46,7 @@ public class BackFiller {
             }
             swapBorders();
         }
-        return result;
+        return holder;
     }
 
     private void processState(FillerState state) {
@@ -140,15 +140,4 @@ public class BackFiller {
         newGeneration.clear();
     }
 
-    public DoubleMask getResult() {
-        return result;
-    }
-
-    public BitMask getMask() {
-        return mask;
-    }
-
-    public HeroBotHolder getHolder() {
-        return holder;
-    }
 }

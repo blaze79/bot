@@ -33,7 +33,7 @@ public class Estimator {
         SimpleMap simpleMap = position.getSimple();
         ClearMap clearMap = position.getClearMap();
         DoubleMask mask = new DoubleMask(simpleMap.rows(), simpleMap.columns());
-        ArrayList<BackFiller> goldenWays = new ArrayList<>();
+        ArrayList<FillerResultHolder> goldenWays = new ArrayList<>();
 
         for (Position gold : position.getGold()) {
             BackFiller filler = new BackFiller(
@@ -42,32 +42,33 @@ public class Estimator {
                     position.getBots(),
                     position.getHero()
             );
-            DoubleMask estimation = filler.estimation(gold);
-            HeroBotHolder botHolder = filler.getHolder();
+
+            FillerResultHolder botHolder = filler.estimation(gold);
+            DoubleMask estimation = botHolder.getResult();
 
             if (botHolder.isHeroFound()) {
                 mask.addWithWeight(
                         estimation,
                         reductionWeight(botHolder.getBotsFound())
                 );
-                goldenWays.add(filler);
+                goldenWays.add(botHolder);
             }
         }
 
         if (decreaseOneGoldMode() || mask.checkLocalMaximum(position.getHero())) {
-            Optional<BackFiller> min = goldenWays.stream().min(
+            Optional<FillerResultHolder> min = goldenWays.stream().min(
                     Comparator.comparing(
-                            filler -> filler.getHolder().getHeroState().getGeneration()
+                            result -> result.getHeroState().getGeneration()
                     )
             );
 
             if (min.isPresent()) {
-                BackFiller minFiller = min.get();
-                int pathLen = minFiller.getHolder().getHeroState().getGeneration();
+                FillerResultHolder minHolder = min.get();
+                int pathLen = minHolder.getHeroState().getGeneration();
                 if (pathLen > depth) {
                     LOGGER.info("Player in local maximum and gold is too far {}", pathLen);
                     checkOneGoldMode();
-                    return minFiller.getResult();
+                    return minHolder.getResult();
                 } else {
                     LOGGER.debug("Player in local maximum but gold is near {}", pathLen);
                 }

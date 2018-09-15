@@ -1,6 +1,8 @@
 package org.silentpom.runner.algo.estimation;
 
 import org.silentpom.runner.domain.Position;
+import org.silentpom.runner.domain.masks.BitMask;
+import org.silentpom.runner.domain.masks.DoubleMask;
 
 import java.util.HashSet;
 import java.util.List;
@@ -9,17 +11,21 @@ import java.util.Set;
 /**
  * Created by Vlad on 11.09.2018.
  */
-public class HeroBotHolder {
+public class FillerResultHolder {
     Set<Position> botSet = new HashSet<>();
     Position hero;
+    BitMask mask;
+    DoubleMask result;
 
     int botsFound = 0;
     boolean heroFound = false;
     FillerState heroState = null;
 
-    public HeroBotHolder(List<Position> bots, Position hero) {
+    public FillerResultHolder(List<Position> bots, Position hero, BitMask mask, DoubleMask result) {
         botSet.addAll(bots);
         this.hero = hero;
+        this.mask = mask;
+        this.result = result;
     }
 
     public void checkOrder(FillerState state) {
@@ -49,5 +55,13 @@ public class HeroBotHolder {
 
     public FillerState getHeroState() {
         return heroState;
+    }
+
+    public BitMask getMask() {
+        return mask;
+    }
+
+    public DoubleMask getResult() {
+        return result;
     }
 }
