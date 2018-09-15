@@ -150,11 +150,14 @@ public class DoubleMask {
     public boolean checkLocalMaximum(Position pos) {
         double val = getChecked(pos);
         double maxValue = Stream.of(
-                pos.left(), pos.right(), pos.up(), pos.down(), pos.left(),
-                pos.left().up(), pos.left().down(), pos.right().up(), pos.right().down()
+                pos.left(), pos.right(), pos.up(), pos.down(), pos.left()
         ).mapToDouble(x -> getChecked(x)).max().orElse(0);
 
         return val>= maxValue;
+    }
+
+    public double findMaximumOfArea(Stream<Position> area) {
+        return area.mapToDouble( pos -> getChecked(pos)).max().orElse(0);
     }
 
 }

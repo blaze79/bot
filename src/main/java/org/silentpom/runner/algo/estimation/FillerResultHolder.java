@@ -4,6 +4,7 @@ import org.silentpom.runner.domain.Position;
 import org.silentpom.runner.domain.masks.BitMask;
 import org.silentpom.runner.domain.masks.DoubleMask;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -16,6 +17,7 @@ public class FillerResultHolder {
     Position hero;
     BitMask mask;
     DoubleMask result;
+    List<Position> markedPoints = new ArrayList<>(32);
 
     int botsFound = 0;
     boolean heroFound = false;
@@ -63,5 +65,18 @@ public class FillerResultHolder {
 
     public DoubleMask getResult() {
         return result;
+    }
+
+    public void markCell(Position pos) {
+        mask.setChecked(pos, true);
+        markedPoints.add(pos);
+    }
+
+    public int getMarks() {
+        return markedPoints.size();
+    }
+
+    public List<Position> getMarkedPoints() {
+        return markedPoints;
     }
 }

@@ -8,6 +8,7 @@ import org.silentpom.runner.domain.state.PositionAndCommand;
 import org.silentpom.runner.domain.validator.ClearMapValidator;
 import org.silentpom.runner.domain.validator.Validator;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -71,6 +72,20 @@ public abstract class AbstractCommandsSet {
         }
 
         return null;
+    }
+
+
+    public List<PositionAndCommand> getNextCommands(Position pos, CommonMap clearMap, Validator validator) {
+        return Arrays.stream(commands())
+                .map(
+                        command -> PositionAndCommand.pair(command.moveCommand(pos, clearMap), command)
+                ).filter(x -> x.getPosition() != null)
+                .filter(x -> validator.isPositionValid(x.getPosition(), clearMap))
+                .collect(Collectors.toList());
+    }
+
+    public List<PositionAndCommand> getNextCommands(Position pos, CommonMap clearMap) {
+        return getNextCommands(pos, clearMap, VALIDATOR);
     }
 
 

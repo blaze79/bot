@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.silentpom.runner.domain.Constants.GOLD_COST;
 import static org.silentpom.runner.domain.Constants.RATE_INFLATION;
@@ -25,6 +26,7 @@ public class Estimator {
     public static Logger LOGGER = LoggerFactory.getLogger(Estimator.class);
 
     int depth = 5;
+    int fillDepth = 4;
     int goldModeTime = depth + 1;
 
     int goldmodeCounter = 0;
@@ -55,7 +57,7 @@ public class Estimator {
             }
         }
 
-        if (decreaseOneGoldMode() || mask.checkLocalMaximum(position.getHero())) {
+        if (decreaseOneGoldMode() || checkLocalMaximum(position, mask, position.getHero())) {
             Optional<FillerResultHolder> min = goldenWays.stream().min(
                     Comparator.comparing(
                             result -> result.getHeroState().getGeneration()
@@ -76,6 +78,23 @@ public class Estimator {
         }
 
         return mask;
+    }
+
+    private boolean checkLocalMaximum(FullMapInfo fullMapInfo ,DoubleMask mask, Position pos) {
+        DirectFiller filler = new DirectFiller(
+                fullMapInfo.getClearMap(),
+                policy(),
+                fullMapInfo.getBots(),
+                fullMapInfo.getHero()
+        );
+
+        FillerResultHolder estimation = filler.estimation(pos, fillDepth);
+        Stream<Position> area = estimation.getMarkedPoints().stream().skip(1);
+        double maxValue = mask.findMaximumOfArea(area);
+
+        return mask.getChecked(pos) > maxValue;
+        //mask.checkLocalMaximum(position.getHero())
+
     }
 
     private boolean decreaseOneGoldMode() {
