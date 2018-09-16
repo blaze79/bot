@@ -73,4 +73,32 @@ public class EstimatorTest {
         }
     }
 
+
+    @Test
+    public void testEstimateSpeed() throws Exception {
+        try (
+                InputStream in = this.getClass().getClassLoader()
+                        .getResourceAsStream("tableCorrect.txt");
+                InputStreamReader reader = new InputStreamReader(in, UTF_8)) {
+            SimpleMap simpleMap = SimpleMap.fromFile(reader);
+            simpleMap.print();
+
+            FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
+
+            Estimator estimator = new Estimator();
+
+            // warm up
+            estimator.estimate(info);
+            for (int i = 0; i < 10; i++) {
+                long time = System.currentTimeMillis();
+                estimator.estimate(info);
+                long usedTime = time - System.currentTimeMillis();
+                System.out.printf("Estimation done for %s ms\n", usedTime);
+            }
+
+            DoubleMask estimation = estimator.estimate(info);
+            System.out.println(estimation.getStringView());
+        }
+    }
+
 }

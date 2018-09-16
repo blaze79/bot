@@ -26,27 +26,27 @@ public class BitMask {
         }
     }
 
-    public int getRows() {
+    public final int getRows() {
         return rows;
     }
 
-    public int getColumns() {
+    public final int getColumns() {
         return columns;
     }
 
-    public boolean getChecked(int row, int column) {
+    public final boolean getChecked(int row, int column) {
         return checked[row][column];
     }
 
-    public boolean getChecked(Position pos) {
+    public final boolean getChecked(Position pos) {
         return getChecked(pos.getRow(), pos.getColumn());
     }
 
-    public void setChecked(int row, int column, boolean data) {
+    public final void setChecked(int row, int column, boolean data) {
         checked[row][column] = data;
     }
 
-    public void setChecked(Position pos, boolean data) {
+    public final void setChecked(Position pos, boolean data) {
          setChecked(pos.getRow(), pos.getColumn(), data);
     }
 

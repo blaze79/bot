@@ -14,27 +14,27 @@ public class Position {
         this.column = column;
     }
 
-    public int getRow() {
+    public final int getRow() {
         return row;
     }
 
-    public int getColumn() {
+    public final int getColumn() {
         return column;
     }
 
-    public Position left() {
+    public final Position left() {
         return PositionsCache.make(row, column-1);
     }
 
-    public Position right() {
+    public final Position right() {
         return PositionsCache.make(row, column+1);
     }
 
-    public Position up() {
+    public final Position up() {
         return PositionsCache.make(row - 1, column);
     }
 
-    public Position down() {
+    public final Position down() {
         return PositionsCache.make(row + 1, column);
     }
 
