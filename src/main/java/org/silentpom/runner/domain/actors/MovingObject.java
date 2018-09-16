@@ -11,34 +11,45 @@ import java.util.List;
  * Created by Vlad on 12.09.2018.
  */
 public abstract class MovingObject extends CellObject {
-    List<GameCommand> commandStack = new ArrayList<>();
+    List<Position> history = new ArrayList<>();
+    private int tickOfDead = -1;
 
     public MovingObject(Position position) {
         super(position);
     }
 
-    public void startNewTick(GameCommand command) {
-        commandStack.add(command);
+    public void startNewTick(Position position) {
+        history.add(position);
     }
 
-    public void changeLastCommand(GameCommand command) {
-        commandStack.set(commandStack.size() -1, command);
+    public void changePosition(Position position) {
+        history.set(history.size() - 1, position);
     }
 
     public void tickBack() {
-        commandStack.remove(commandStack.size() -1);
+        history.remove(history.size() - 1);
+        if(history.size() > tickOfDead) {
+            tickOfDead = -1;
+        }
     }
 
     @Override
     public Position position(int time) {
-        Position pos = startPosition();
-        for(GameCommand command: commandStack) {
-            pos = command.moveOnly(pos);
+        for (int i = history.size(); i >= 0; i--) {
+            Position position = history.get(i);
+            if (position != null) {
+                return position;
+            }
         }
-        return pos;
+
+        return history.get(history.size() - 1);
     }
 
     public boolean isDead() {
-        return commandStack.stream().anyMatch( x -> x.isDead());
+        return tickOfDead >= 0;
+    }
+
+    public void setTickOfDead(int tickOfDead) {
+        this.tickOfDead = tickOfDead;
     }
 }

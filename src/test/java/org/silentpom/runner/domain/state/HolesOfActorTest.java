@@ -43,5 +43,9 @@ public class HolesOfActorTest {
         holesOfActor.startNewTick(null);
         assertEquals(holesOfActor.cellType(pos), null);
 
+        for(int i=0; i<6; ++i) {
+            holesOfActor.tickBack();
+        }
+        assertEquals(holesOfActor.cellType(pos), null);
     }
 }
