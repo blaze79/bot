@@ -1,10 +1,7 @@
 package org.silentpom.runner.domain.masks;
 
-import org.silentpom.runner.domain.Position;
 import org.silentpom.runner.domain.state.PositionsCache;
 import org.testng.annotations.Test;
-
-import static org.testng.Assert.*;
 
 /**
  * Created by Vlad on 10.09.2018.

@@ -11,11 +11,9 @@ import java.util.List;
  * Created by Vlad on 12.09.2018.
  */
 public class HolesOfActor {
-    List<HoleCell> holes;
     List<Position> timeStack = new ArrayList<>();
 
-    public HolesOfActor(List<HoleCell> holes) {
-        this.holes = holes;
+    public HolesOfActor() {
     }
 
     public void startNewTick(Position hole) {
@@ -41,12 +39,6 @@ public class HolesOfActor {
             }
         }
 
-        for (HoleCell hole : holes) {
-            CellType cellType = hole.getCellType(timeStack.size());
-            if (cellType != null) {
-                return cellType;
-            }
-        }
         return null;
     }
 }

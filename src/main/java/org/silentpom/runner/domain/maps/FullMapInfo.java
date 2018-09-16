@@ -3,6 +3,7 @@ package org.silentpom.runner.domain.maps;
 import org.silentpom.runner.domain.CellCategory;
 import org.silentpom.runner.domain.CellType;
 import org.silentpom.runner.domain.Position;
+import org.silentpom.runner.domain.actors.HoleCell;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,6 +18,7 @@ public class FullMapInfo {
     List<Position> bots;
     List<Position> enemy;
     List<Position> gold;
+    List<HoleCell> holes;
 
     public SimpleMap getSimple() {
         return simple;
@@ -46,6 +48,9 @@ public class FullMapInfo {
         return gold;
     }
 
+    public List<HoleCell> getHoles() {
+        return holes;
+    }
 
     public static FullMapInfo buildFromMap(SimpleMap map) {
         FullMapInfo fullMapInfo = new FullMapInfo();
@@ -71,6 +76,12 @@ public class FullMapInfo {
                 .stream()
                 .map(info -> info.getPosition())
                 .collect(Collectors.toList());
+
+        holes = simple.selectCells(cell -> cell.getCategory() == CellCategory.HOLE)
+                .stream()
+                .map(info -> new HoleCell(info.getPosition(), info.getType()))
+                .collect(Collectors.toList());
+
 
         List<Position> heros = simple.selectCells(cell -> cell.getCategory() == CellCategory.MY)
                 .stream()
