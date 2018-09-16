@@ -29,9 +29,11 @@ public class CommonHoles {
     public CellType cellType(Position pos) {
 
         for (HoleCell hole : holes) {
-            CellType cellType = hole.getCellType(ticks);
-            if (cellType != null) {
-                return cellType;
+            if (pos.equals(hole.position(0))) {
+                CellType cellType = hole.getCellType(ticks);
+                if (cellType != null) {
+                    return cellType;
+                }
             }
         }
         return null;

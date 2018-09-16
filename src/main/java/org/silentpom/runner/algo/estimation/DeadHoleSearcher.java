@@ -73,7 +73,7 @@ public class DeadHoleSearcher {
     public static void clear() {
         lastSavedResult = null;
     }
-    
+
     private static BitMask lastSavedResult = null;
     private static WeightPolicy LOCAL_POLICY = new LinearWeightPolicy(GOLD_COST, RATE_INFLATION);
 }

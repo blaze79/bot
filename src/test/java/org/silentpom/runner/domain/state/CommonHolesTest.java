@@ -9,6 +9,8 @@
  */
 package org.silentpom.runner.domain.state;
 
+import org.silentpom.runner.domain.CellType;
+import org.silentpom.runner.domain.actors.HoleCell;
 import org.silentpom.runner.domain.maps.FullMapInfo;
 import org.silentpom.runner.domain.maps.SimpleMap;
 import org.testng.annotations.Test;
@@ -16,6 +18,10 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.testng.Assert.assertEquals;
@@ -33,7 +39,42 @@ public class CommonHolesTest {
 
             FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
 
-            assertEquals(info.getHoles().size(), 5);
+            List<HoleCell> mapHoles = info.getHoles();
+            assertEquals(mapHoles.size(), 5);
+
+            CommonHoles holes = new CommonHoles(mapHoles);
+
+            CellType[] types = {CellType.DRILL_PIT, CellType.PIT_FILL_1, CellType.PIT_FILL_2, CellType.PIT_FILL_3, CellType.PIT_FILL_4};
+            List<CellType> cellTypeList  = Stream.of(types).collect(Collectors.toList());
+
+            for (int i = 0; i < cellTypeList.size(); ++i) {
+                assertEquals(
+                        holes.cellType(mapHoles.get(i).position(0)),
+                        cellTypeList.get(i)
+                );
+            }
+
+            holes.startNewTick();
+            cellTypeList.remove(0);
+            cellTypeList.add(null);
+
+            for (int i = 0; i < cellTypeList.size(); ++i) {
+                assertEquals(
+                        holes.cellType(mapHoles.get(i).position(0)),
+                        cellTypeList.get(i)
+                );
+            }
+
+            holes.tickBack();
+            cellTypeList  = Stream.of(types).collect(Collectors.toList());
+
+            for (int i = 0; i < cellTypeList.size(); ++i) {
+                assertEquals(
+                        holes.cellType(mapHoles.get(i).position(0)),
+                        cellTypeList.get(i)
+                );
+            }
+
         }
     }
 }

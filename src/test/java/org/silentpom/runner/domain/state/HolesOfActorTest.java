@@ -9,5 +9,39 @@
  */
 package org.silentpom.runner.domain.state;
 
+import org.silentpom.runner.domain.CellType;
+import org.silentpom.runner.domain.Position;
+import org.testng.annotations.Test;
+
+import java.io.IOException;
+
+import static org.testng.Assert.assertEquals;
+
 public class HolesOfActorTest {
+    @Test
+    public void testHoles() throws IOException {
+        Position pos = PositionsCache.make(10, 11);
+        Position pos2 = PositionsCache.make(10, 12);
+
+        HolesOfActor holesOfActor = new HolesOfActor();
+
+        holesOfActor.startNewTick(pos);
+        holesOfActor.startNewTick(null);
+
+        assertEquals(holesOfActor.cellType(pos), CellType.PIT_FILL_1);
+        holesOfActor.startNewTick(pos2);
+
+        assertEquals(holesOfActor.cellType(pos), CellType.PIT_FILL_2);
+        assertEquals(holesOfActor.cellType(pos2), CellType.DRILL_PIT);
+
+        holesOfActor.startNewTick(null);
+        assertEquals(holesOfActor.cellType(pos), CellType.PIT_FILL_3);
+
+        holesOfActor.startNewTick(null);
+        assertEquals(holesOfActor.cellType(pos), CellType.PIT_FILL_4);
+
+        holesOfActor.startNewTick(null);
+        assertEquals(holesOfActor.cellType(pos), null);
+
+    }
 }
