@@ -21,6 +21,10 @@ public class DigRightEstimationCommand implements MoveCommand {
     @Override
     public Position moveCommand(Position x, CommonMap map) {
         Position right = x.right();
+        if (!map.getCell(x.down()).canStayOn()) {
+            return null;
+        }
+
         if (map.getCell(right) == CellType.NONE) {
             Position rightDown = right.down();
             if(map.getCell(rightDown) == CellType.BRICK || map.getCell(rightDown).getCategory() == CellCategory.HOLE) {

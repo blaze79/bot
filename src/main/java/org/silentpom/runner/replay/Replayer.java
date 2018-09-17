@@ -27,6 +27,7 @@ public class Replayer {
             );
             LOGGER.info(stepMap.getStringView());
             if (state.getCommand() != null) {
+                LOGGER.info(state.getCommand().getCode());
                 waitCommand(state.getCommand().tickCount());
             }
         }

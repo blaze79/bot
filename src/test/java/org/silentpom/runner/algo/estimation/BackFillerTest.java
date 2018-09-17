@@ -145,4 +145,26 @@ public class BackFillerTest {
         }
     }
 
+    @Test
+    public void testAnomaly() throws Exception {
+        try (
+                InputStream in = this.getClass().getClassLoader()
+                        .getResourceAsStream("anomalyMap.txt");
+                InputStreamReader reader = new InputStreamReader(in, UTF_8)) {
+            SimpleMap simpleMap = SimpleMap.fromFile(reader);
+            simpleMap.print();
+
+            FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
+
+            Estimator estimator = new Estimator();
+            estimator.forceOneMode();
+            estimator.estimate(info);
+
+            List<FillerState> fillerStates = Estimator.BEST_SINGLE.getHeroState().asList();
+
+            Replayer replayer = new Replayer();
+            replayer.replay(info.getClearMap(), fillerStates);
+        }
+    }
+
 }

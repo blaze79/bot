@@ -25,7 +25,7 @@ public class StayOnOnePositionFilter implements SinglePrefilter {
         Position hero = info.getHero();
         if (oldPosition.equals(hero)) {
             counter++;
-            return processSamePosition(estimator);
+            return processSamePosition(hero, estimator);
         } else {
             if (hero != null) {
                 oldPosition = hero;
@@ -35,15 +35,15 @@ public class StayOnOnePositionFilter implements SinglePrefilter {
         return null;
     }
 
-    private GameCommand processSamePosition(Estimator estimator) {
+    private GameCommand processSamePosition(Position hero, Estimator estimator) {
         if (counter == gotoOneLimit) {
-            LOGGER.info("Estimator switched to SINGLE mode");
+            LOGGER.info("Estimator switched to SINGLE mode {}, {}", hero.getRow(), hero.getColumn());
             estimator.forceOneMode();
             return null;
         }
 
         if (counter >= deadLimit) {
-            LOGGER.warn("Trapped in one point too long");
+            LOGGER.warn("Trapped in one point too long {}, {}", hero.getRow(), hero.getColumn());
             counter = 0;
             return new DieCommand();
         }
