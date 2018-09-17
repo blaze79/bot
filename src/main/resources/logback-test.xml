@@ -18,13 +18,46 @@
         </encoder>
     </appender>
 
+    <appender name="MAP" class="ch.qos.logback.core.FileAppender">
+        <file>runner_map.log</file>
+        <append>true</append>
+        <immediateFlush>true</immediateFlush>
+
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} \(%t:%c{0}\) %m%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="PREFILTER" class="ch.qos.logback.core.FileAppender">
+        <file>runner_filter.log</file>
+        <append>true</append>
+        <immediateFlush>true</immediateFlush>
+
+        <encoder>
+            <charset>UTF-8</charset>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} \(%t:%c{0}\) %m%n</pattern>
+        </encoder>
+    </appender>
+
 
     <root level="debug">
         <appender-ref ref="STDOUT" />
+        <appender-ref ref="FILE" />
     </root>
 
     <logger level="INFO" name="org.silentpom.runner.client.RunnerClient" additivity="true" >
         <appender-ref ref="FILE" />
     </logger>
+
+    <logger level="INFO" name="org.silentpom.runner.domain.maps.MapDecoder" additivity="true" >
+        <appender-ref ref="MAP" />
+    </logger>
+
+    <logger level="INFO" name="org.silentpom.runner.algo.solve.prefilter" additivity="true" >
+        <appender-ref ref="PREFILTER" />
+    </logger>
+
+
 
 </configuration>

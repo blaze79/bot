@@ -11,8 +11,12 @@ package org.silentpom.runner.client;
 
 import org.silentpom.runner.algo.estimation.Estimator;
 import org.silentpom.runner.algo.estimation.FillerState;
+import org.silentpom.runner.algo.solve.GreedySolver;
+import org.silentpom.runner.algo.solve.ProblemSolver;
 import org.silentpom.runner.algo.solve.commands.GameCommand;
+import org.silentpom.runner.algo.solve.prefilter.Prefilters;
 import org.silentpom.runner.domain.maps.FullMapInfo;
+import org.silentpom.runner.domain.maps.MapDecoder;
 import org.silentpom.runner.domain.maps.SimpleMap;
 import org.silentpom.runner.domain.masks.DoubleMask;
 import org.silentpom.runner.replay.Replayer;
@@ -30,33 +34,34 @@ public class RunnerClient {
     String code = "14472771371957506935";
     String name = "vladislav.kogut@luxoft.com";
 
-    String boardPatternStr = "^board=(.*)$";
-    Pattern boardPattern = Pattern.compile(boardPatternStr);
-
     String url = "ws://loderunner.luxoft.com:8080/codenjoy-contest/ws?user=vladislav.kogut@luxoft.com&code=14472771371957506935";
 
     public static Logger LOGGER = LoggerFactory.getLogger(RunnerClient.class);
+
+    MapDecoder mapDecoder = new MapDecoder();
+    Estimator estimator = new Estimator();
+    ProblemSolver solver = new GreedySolver();
+    Prefilters prefilters = new Prefilters();
 
     public void startEndConnect() throws Exception {
         final GameClientEndpoint clientEndPoint = new GameClientEndpoint(new URI(url));
         clientEndPoint.addMessageHandler(new GameClientEndpoint.MessageHandler() {
             public void handleMessage(String message) {
-                LOGGER.info(message);
+                String command = "WAIT";
+                try {
+                    FullMapInfo info = mapDecoder.mapDecode(message);
 
-                //clientEndPoint.sendMessage("RIGHT");
-                String command = processStep(message);
-                //command = "ACT LEFT";
+                    command = processStep(info);
+                    //command = "ACT LEFT";
+                } catch (Exception ex) {
+                    LOGGER.error("Exception ", ex);
+                }
+
                 LOGGER.info("Command: {}", command);
                 clientEndPoint.sendMessage(
                         command
                 );
 
-                /*JsonObject jsonObject = Json.createReader(new StringReader(message)).readObject();
-                String userName = jsonObject.getString("user");
-                if (!"bot".equals(userName)) {
-                    clientEndPoint.sendMessage(getMessage("Hello " + userName +", How are you?"));
-                    // other dirty bot logic goes here.. :)
-                }*/
             }
         });
 
@@ -71,21 +76,7 @@ public class RunnerClient {
         client.startEndConnect();
     }
 
-    private String processStep(String map) {
-        Matcher matcher = boardPattern.matcher(map);
-        if (!matcher.matches()) {
-            LOGGER.error("PATTERN ERROR {}", map);
-            return "LEFT";
-        }
-
-        SimpleMap simpleMap = SimpleMap.fromLongString(matcher.group(1));
-        LOGGER.info(simpleMap.getStringView());
-
-
-        FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
-        Estimator estimator = new Estimator();
-
-        // warm up
+    private String processStep(FullMapInfo info) {
 
         long time = System.currentTimeMillis();
         estimator.forceOneMode();
@@ -94,14 +85,15 @@ public class RunnerClient {
 
         LOGGER.info("Estimation done for {} ms", usedTime);
 
-        if (BEST_SINGLE != null) {
-            FillerState heroState = BEST_SINGLE.getHeroState();
-            if (heroState != null) {
-                GameCommand gameCommand = heroState.getCommand().toGameCommand();
-                if (gameCommand != null) {
-                    return gameCommand.getCode();
-                }
-            }
+        GameCommand preCommand = prefilters.checkStupidSituations(estimator, info);
+        if (preCommand != null) {
+            return preCommand.getCode();
+        }
+
+        GameCommand bestCommand = solver.findBestCommand(estimate, info);
+
+        if (bestCommand != null) {
+            return bestCommand.getCode();
         }
 
         return "WAIT";

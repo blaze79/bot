@@ -84,7 +84,6 @@ public class Estimator {
                     LOGGER.debug("Player in local maximum but gold is near {}", pathLen);
 
                     BEST_SINGLE = minHolder;
-                    return minHolder.getResult();
                 }
             }
         }
