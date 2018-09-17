@@ -1,5 +1,8 @@
 package org.silentpom.runner.domain.commands;
 
+import org.silentpom.runner.algo.solve.commands.DigRightCommand;
+import org.silentpom.runner.algo.solve.commands.GameCommand;
+import org.silentpom.runner.algo.solve.commands.GameRightCommand;
 import org.silentpom.runner.domain.CellCategory;
 import org.silentpom.runner.domain.CellType;
 import org.silentpom.runner.domain.Position;
@@ -37,5 +40,15 @@ public class DigRightEstimationCommand implements MoveCommand {
     public int tickCount() {
         return 4;
     }
+
+    @Override
+    public GameCommand toGameCommand() {
+        GameCommand gameCommand = COMMAND[COUNTER++];
+        COUNTER = COUNTER%2;
+        return gameCommand;
+    }
+
+    public static GameCommand COMMAND[]={ new DigRightCommand(), new GameRightCommand()};
+    private static int COUNTER = 0;
 
 }

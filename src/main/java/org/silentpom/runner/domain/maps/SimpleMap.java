@@ -126,6 +126,26 @@ public class SimpleMap implements CommonMap {
         return map;
     }
 
+    public static SimpleMap fromLongString(String rawData) {
+        int N = (int) Math.floor(Math.sqrt(rawData.length()) + 0.5);
+
+        SimpleMap map = new SimpleMap(N, N);
+        int offset = 0;
+
+        for (int i = 0; i < N; ++i) {
+            for (int j = 0; j < N; ++j, ++offset) {
+                map.setCell(
+                        i,
+                        j,
+                        CellType.fromChar(rawData.charAt(offset))
+                );
+            }
+        }
+
+        return map;
+    }
+
+
     public static SimpleMap fromClearMap(ClearMap map) {
         return new SimpleMap(map.rows(), map.columns(), map.copyMap());
     }

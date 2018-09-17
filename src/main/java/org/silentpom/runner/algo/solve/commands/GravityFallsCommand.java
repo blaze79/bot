@@ -11,7 +11,7 @@ public class GravityFallsCommand implements GameCommand {
 
     @Override
     public String getCode() {
-        return "FALLLLING";
+        return "DOWN";
     }
 
     @Override

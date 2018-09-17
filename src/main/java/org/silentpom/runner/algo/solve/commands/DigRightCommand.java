@@ -18,7 +18,7 @@ public class DigRightCommand implements GameCommand {
 
     @Override
     public String getCode() {
-        return "DIG RIGHT";
+        return "ACT RIGHT";
     }
 
     @Override

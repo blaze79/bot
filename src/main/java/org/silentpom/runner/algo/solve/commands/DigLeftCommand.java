@@ -17,7 +17,7 @@ public class DigLeftCommand implements GameCommand {
 
     @Override
     public String getCode() {
-        return "DIG LEFT";
+        return "ACT LEFT";
     }
 
     @Override

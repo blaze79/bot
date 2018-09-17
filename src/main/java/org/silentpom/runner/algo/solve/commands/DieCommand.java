@@ -10,7 +10,7 @@ public class DieCommand implements GameCommand {
 
     @Override
     public String getCode() {
-        return "DIEEEE";
+        return "ACT(0)";
     }
 
     @Override

@@ -1,5 +1,6 @@
 package org.silentpom.runner.algo.estimation;
 
+import javafx.geometry.Pos;
 import org.silentpom.runner.algo.estimation.policy.LinearWeightPolicy;
 import org.silentpom.runner.algo.estimation.policy.WeightPolicy;
 import org.silentpom.runner.domain.Position;
@@ -12,7 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.silentpom.runner.domain.Constants.GOLD_COST;
@@ -31,13 +34,18 @@ public class Estimator {
 
     int goldmodeCounter = 0;
 
+    int WINDOW = 25;
+    int closeGold = 3;
+
     public DoubleMask estimate(FullMapInfo position) {
         SimpleMap simpleMap = position.getSimple();
         ClearMap clearMap = position.getClearMap();
         DoubleMask mask = new DoubleMask(simpleMap.rows(), simpleMap.columns());
         ArrayList<FillerResultHolder> goldenWays = new ArrayList<>();
 
-        for (Position gold : position.getGold()) {
+        List<Position> usedGold = filterGolds(position.getGold(), position.getHero());
+
+        for (Position gold : usedGold) {
             BackFiller filler = new BackFiller(
                     clearMap,
                     policy(),
@@ -70,9 +78,13 @@ public class Estimator {
                 if (pathLen > depth) {
                     LOGGER.info("Player in local maximum and gold is too far {}", pathLen);
                     checkOneGoldMode();
+                    BEST_SINGLE = minHolder;
                     return minHolder.getResult();
                 } else {
                     LOGGER.debug("Player in local maximum but gold is near {}", pathLen);
+
+                    BEST_SINGLE = minHolder;
+                    return minHolder.getResult();
                 }
             }
         }
@@ -80,7 +92,7 @@ public class Estimator {
         return mask;
     }
 
-    private boolean checkLocalMaximum(FullMapInfo fullMapInfo ,DoubleMask mask, Position pos) {
+    private boolean checkLocalMaximum(FullMapInfo fullMapInfo, DoubleMask mask, Position pos) {
         DirectFiller filler = new DirectFiller(
                 fullMapInfo.getClearMap(),
                 policy(),
@@ -136,5 +148,24 @@ public class Estimator {
         return Math.pow(2, -order);
     }
 
+    private List<Position> filterGolds(List<Position> golds, Position hero) {
+        long nearGold = golds.stream().filter(gold -> distance(gold, hero) < WINDOW).count();
+        if (nearGold <= closeGold) {
+            return golds;
+        }
+
+        return golds.stream().filter(gold -> distance(gold, hero) < WINDOW).collect(Collectors.toList());
+    }
+
+    private int distance(Position a, Position b) {
+        return Math.abs(a.getRow() - b.getRow()) + Math.abs(a.getColumn() - b.getColumn());
+    }
+
+    public void forceOneMode() {
+        goldmodeCounter = 10;
+    }
+
     private static WeightPolicy POLICY = new LinearWeightPolicy(GOLD_COST, RATE_INFLATION);
+
+    public static  FillerResultHolder BEST_SINGLE = null;
 }

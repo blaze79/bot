@@ -6,7 +6,7 @@ import org.silentpom.runner.domain.Position;
  * Created by Vlad on 12.09.2018.
  */
 public class PositionsCache {
-    private int N = 200;
+    private int N = 108;
     private int SHIFT = 20;
     private Position[][] cache = new Position[N][N];
 
