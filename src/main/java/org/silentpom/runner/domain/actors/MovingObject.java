@@ -16,6 +16,7 @@ public abstract class MovingObject extends CellObject {
     List<Position> history = new ArrayList<>();
     HolesOfActor actorHoles = new HolesOfActor();
     private int tickOfDead = -1;
+    List<GameCommand> commandStack = new ArrayList<>();
 
     public MovingObject(Position position) {
         super(position);
@@ -24,6 +25,7 @@ public abstract class MovingObject extends CellObject {
     public void startNewTick(Position position) {
         history.add(position);
         actorHoles.startNewTick(null);
+        commandStack.add(null);
     }
 
     public void changePosition(Position position) {
@@ -34,12 +36,17 @@ public abstract class MovingObject extends CellObject {
         actorHoles.changeLastHole(position);
     }
 
+    public void changeCommand(GameCommand command) {
+        commandStack.set(commandStack.size() - 1, command);
+    }
+
     public void tickBack() {
         history.remove(history.size() - 1);
-        if(history.size() > tickOfDead) {
+        if (history.size() > tickOfDead) {
             tickOfDead = -1;
         }
         actorHoles.tickBack();
+        commandStack.remove(commandStack.size() - 1);
     }
 
     @Override
@@ -51,7 +58,7 @@ public abstract class MovingObject extends CellObject {
             }
         }
 
-        return history.get(history.size() - 1);
+        return startPosition();
     }
 
     public final CellType getCellType(int time, Position pos, boolean hide) {
@@ -71,5 +78,9 @@ public abstract class MovingObject extends CellObject {
 
     public void setTickOfDead(int tickOfDead) {
         this.tickOfDead = tickOfDead;
+    }
+
+    public GameCommand getLastCommand() {
+        return commandStack.get(commandStack.size() - 1);
     }
 }

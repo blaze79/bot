@@ -25,6 +25,8 @@ public enum CellType {
     PIT_FILL_2('2', CellCategory.HOLE),
     PIT_FILL_3('3', CellCategory.HOLE),
     PIT_FILL_4('4', CellCategory.HOLE),
+    // фейковая яма для новых ям. они первые 4 хода видны как пустота
+    PIT_FILL_8('8', CellCategory.HOLE),
     /**
      * В момент сверления мы видим процесс так:
      */

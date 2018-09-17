@@ -28,20 +28,22 @@ public class HolesOfActorTest {
         holesOfActor.startNewTick(pos);
         holesOfActor.startNewTick(null);
 
-        assertEquals(holesOfActor.cellType(pos), CellType.PIT_FILL_1);
+        //assertEquals(holesOfActor.cellType(pos), CellType.PIT_FILL_1);
+        assertEquals(holesOfActor.cellType(pos), CellType.PIT_FILL_8);
         holesOfActor.startNewTick(pos2);
 
-        assertEquals(holesOfActor.cellType(pos), CellType.PIT_FILL_2);
-        assertEquals(holesOfActor.cellType(pos2), CellType.DRILL_PIT);
+        //assertEquals(holesOfActor.cellType(pos), CellType.PIT_FILL_2);
+        assertEquals(holesOfActor.cellType(pos), CellType.PIT_FILL_8);
+        assertEquals(holesOfActor.cellType(pos2), CellType.PIT_FILL_8);
 
         holesOfActor.startNewTick(null);
-        assertEquals(holesOfActor.cellType(pos), CellType.PIT_FILL_3);
+        assertEquals(holesOfActor.cellType(pos), CellType.PIT_FILL_8);
 
         holesOfActor.startNewTick(null);
-        assertEquals(holesOfActor.cellType(pos), CellType.PIT_FILL_4);
+        assertEquals(holesOfActor.cellType(pos), CellType.PIT_FILL_8);
 
         holesOfActor.startNewTick(null);
-        assertEquals(holesOfActor.cellType(pos), null);
+        assertEquals(holesOfActor.cellType(pos), CellType.PIT_FILL_8);
 
         for(int i=0; i<6; ++i) {
             holesOfActor.tickBack();

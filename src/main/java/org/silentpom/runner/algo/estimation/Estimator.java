@@ -34,8 +34,8 @@ public class Estimator {
 
     int goldmodeCounter = 0;
 
-    int WINDOW = 25;
-    int closeGold = 3;
+    int WINDOW = 30;
+    int closeGold = 2;
 
     public DoubleMask estimate(FullMapInfo position) {
         SimpleMap simpleMap = position.getSimple();

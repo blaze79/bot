@@ -9,18 +9,23 @@
  */
 package org.silentpom.runner.domain.state;
 
+import org.silentpom.runner.algo.solve.commands.CommandResult;
+import org.silentpom.runner.algo.solve.commands.GameCommand;
+import org.silentpom.runner.algo.solve.commands.GravityFallsCommand;
 import org.silentpom.runner.domain.CellCategory;
 import org.silentpom.runner.domain.CellInfo;
 import org.silentpom.runner.domain.CellType;
 import org.silentpom.runner.domain.Position;
 import org.silentpom.runner.domain.actors.Hero;
 import org.silentpom.runner.domain.actors.Hunter;
+import org.silentpom.runner.domain.actors.MovingObject;
 import org.silentpom.runner.domain.actors.OtherBot;
 import org.silentpom.runner.domain.maps.CellFilter;
 import org.silentpom.runner.domain.maps.ClearMap;
 import org.silentpom.runner.domain.maps.CommonMap;
 import org.silentpom.runner.domain.maps.FullMapInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -34,6 +39,12 @@ public class FullMapAtTime {
     CommonHoles commonHoles;
     int tick = 0;
 
+    CommonMap simpleView;
+    CommonMap heroView;
+    List<CommonMap> huntersView;
+    List<CommonMap> botsView;
+
+
     public FullMapAtTime(FullMapInfo info) {
         hero = new Hero(info.getHero());
         hunters = info.getEnemy().stream().map(x -> new Hunter(x)).collect(Collectors.toList());
@@ -42,6 +53,8 @@ public class FullMapAtTime {
         goldOfMap = new GoldOfMap(info, holeActors());
 
         clearMap = info.getClearMap();
+        createCommonMaps();
+        initCommands();
     }
 
     private int holeActors() {
@@ -111,14 +124,47 @@ public class FullMapAtTime {
 
         goldOfMap.newTick();
         commonHoles.startNewTick();
-        hero.startNewTick(null);
 
-        for (Hunter hunter : hunters) {
-            hunter.startNewTick(null);
+        CommandResult tempResult = new CommandResult();
+
+        hero.startNewTick(null);
+        initCommand(hero, heroView, tempResult);
+
+        for (int i = 0; i < bots.size(); ++i) {
+            bots.get(i).startNewTick(null);
+            initCommand(bots.get(i), botsView.get(i), tempResult);
+
         }
 
-        for (OtherBot bot : bots) {
-            bot.startNewTick(null);
+        for (int i = 0; i < hunters.size(); ++i) {
+            hunters.get(i).startNewTick(null);
+            initCommand(hunters.get(i), huntersView.get(i), tempResult);
+        }
+    }
+
+    public void initCommands() {
+        CommandResult tempResult = new CommandResult();
+        initCommand(hero, heroView, tempResult);
+
+        for (int i = 0; i < bots.size(); ++i) {
+            initCommand(bots.get(i), botsView.get(i), tempResult);
+
+        }
+
+        for (int i = 0; i < hunters.size(); ++i) {
+            initCommand(hunters.get(i), huntersView.get(i), tempResult);
+        }
+    }
+
+
+    private void initCommand(MovingObject object, CommonMap mapView, CommandResult tempResult) {
+        tempResult.resetPosition(object.position(tick));
+
+        boolean willFall = GRAVITY.moveInGame(mapView, tempResult, false);
+        if (willFall) {
+            object.changeCommand(GRAVITY);
+        } else {
+            object.changeCommand(null);
         }
     }
 
@@ -136,6 +182,11 @@ public class FullMapAtTime {
         for (OtherBot bot : bots) {
             bot.tickBack();
         }
+    }
+
+    public void moveHero(Position newPos) {
+        hero.changePosition(newPos);
+        goldOfMap.objectMoved(0, newPos);
     }
 
     private CommonMap createCommonMap(boolean hideHero, int hidedBot, int hidedHunter) {
@@ -162,7 +213,33 @@ public class FullMapAtTime {
         };
     }
 
-    public CommonMap getCommonMap() {
-        return createCommonMap(false, -1, -1);
+    private void createCommonMaps() {
+        simpleView = createCommonMap(false, -1, -1);
+        heroView = createCommonMap(true, -1, -1);
+
+        huntersView = new ArrayList<>();
+        for (int i = 0; i < hunters.size(); ++i) {
+            huntersView.add(createCommonMap(false, -1, i));
+        }
+
+        botsView = new ArrayList<>();
+        for (int i = 0; i < bots.size(); ++i) {
+            botsView.add(createCommonMap(false, i, -1));
+        }
     }
+
+    public Hero getHero() {
+        return hero;
+    }
+
+    public CommonMap getHeroView() {
+        return heroView;
+    }
+
+    public CommonMap getSimpleMap() {
+        return simpleView;
+    }
+
+    public static GameCommand GRAVITY = new GravityFallsCommand();
+
 }

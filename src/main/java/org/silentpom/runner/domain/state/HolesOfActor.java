@@ -28,7 +28,7 @@ public class HolesOfActor {
         timeStack.remove(timeStack.size() - 1);
     }
 
-    public CellType cellType(Position pos) {
+   /* public CellType cellType(Position pos) {
         for (int i = timeStack.size() - 1; i >= 0; --i) {
             Position hole = timeStack.get(i);
             if (pos.equals(hole)) {
@@ -36,6 +36,22 @@ public class HolesOfActor {
                 if (cellType != null) {
                     return cellType;
                 }
+            }
+        }
+
+        return null;
+    }*/
+
+    /**
+     * new holes live very long
+     * @param pos
+     * @return
+     */
+    public CellType cellType(Position pos) {
+        for (int i = timeStack.size() - 1; i >= 0; --i) {
+            Position hole = timeStack.get(i);
+            if (pos.equals(hole)) {
+                return CellType.PIT_FILL_8;
             }
         }
 
