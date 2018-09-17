@@ -16,8 +16,6 @@ public interface CommonMap {
 
     CellType getCell(int i, int j);
 
-    List<CellInfo> selectCells(CellFilter filter);
-
     default CellType getCell(Position p) {
         return getCell(p.getRow(), p.getColumn());
     }

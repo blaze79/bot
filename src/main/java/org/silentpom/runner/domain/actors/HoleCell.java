@@ -15,7 +15,7 @@ public class HoleCell extends CellObject {
     }
 
     @Override
-    public CellType getCellType(int time) {
+    public CellType getCellType(int time, Position position, boolean hide) {
         return findCellType(time, tick);
     }
 

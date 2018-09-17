@@ -16,7 +16,7 @@ public class Hero extends MovingObject {
     }
 
     @Override
-    public CellType getCellType(int time) {
+    protected CellType getCellTypeImpl() {
         if (isDead()) {
             return null;
         }

@@ -21,5 +21,5 @@ public abstract class CellObject {
         return position;
     }
 
-    public abstract CellType getCellType(int time);
+    public abstract CellType getCellType(int time, Position pos, boolean hide);
 }

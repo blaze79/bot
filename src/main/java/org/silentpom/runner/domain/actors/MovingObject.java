@@ -1,8 +1,10 @@
 package org.silentpom.runner.domain.actors;
 
 import org.silentpom.runner.algo.solve.commands.GameCommand;
+import org.silentpom.runner.domain.CellType;
 import org.silentpom.runner.domain.Position;
 import org.silentpom.runner.domain.commands.MoveCommand;
+import org.silentpom.runner.domain.state.HolesOfActor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.List;
  */
 public abstract class MovingObject extends CellObject {
     List<Position> history = new ArrayList<>();
+    HolesOfActor actorHoles = new HolesOfActor();
     private int tickOfDead = -1;
 
     public MovingObject(Position position) {
@@ -20,10 +23,15 @@ public abstract class MovingObject extends CellObject {
 
     public void startNewTick(Position position) {
         history.add(position);
+        actorHoles.startNewTick(null);
     }
 
     public void changePosition(Position position) {
         history.set(history.size() - 1, position);
+    }
+
+    public void changeHole(Position position) {
+        actorHoles.changeLastHole(position);
     }
 
     public void tickBack() {
@@ -31,6 +39,7 @@ public abstract class MovingObject extends CellObject {
         if(history.size() > tickOfDead) {
             tickOfDead = -1;
         }
+        actorHoles.tickBack();
     }
 
     @Override
@@ -44,6 +53,17 @@ public abstract class MovingObject extends CellObject {
 
         return history.get(history.size() - 1);
     }
+
+    public final CellType getCellType(int time, Position pos, boolean hide) {
+        if (!hide && pos.equals(position(time))) {
+            return getCellTypeImpl();
+        }
+
+        return actorHoles.cellType(pos);
+    }
+
+    protected abstract CellType getCellTypeImpl();
+
 
     public boolean isDead() {
         return tickOfDead >= 0;

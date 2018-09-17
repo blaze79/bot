@@ -30,7 +30,7 @@ public class CommonHoles {
 
         for (HoleCell hole : holes) {
             if (pos.equals(hole.position(0))) {
-                CellType cellType = hole.getCellType(ticks);
+                CellType cellType = hole.getCellType(ticks, pos, false);
                 if (cellType != null) {
                     return cellType;
                 }

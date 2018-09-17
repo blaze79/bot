@@ -38,7 +38,7 @@ public class ClearMap implements CommonMap {
         return cells[i][j];
     }
 
-    @Override
+    /*@Override
     public List<CellInfo> selectCells(CellFilter filter) {
         ArrayList<CellInfo> list = new ArrayList<CellInfo>();
         for (int i = 0; i < rows; ++i) {
@@ -49,7 +49,7 @@ public class ClearMap implements CommonMap {
             }
         }
         return list;
-    }
+    }*/
 
     private void init() {
         for (int i = 0; i < rows; ++i) {

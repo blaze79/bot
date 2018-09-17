@@ -6,8 +6,9 @@ import org.silentpom.runner.domain.Position;
 /**
  * Created by Vlad on 12.09.2018.
  */
-public class Hunter  extends MovingObject {
-    public Hunter(Position position) {
+public class OtherBot extends MovingObject {
+
+    public OtherBot(Position position) {
         super(position);
     }
 
@@ -16,6 +17,6 @@ public class Hunter  extends MovingObject {
         if (isDead()) {
             return null;
         }
-        return CellType.ENEMY_LEFT;
+        return CellType.OTHER_HERO_LEFT;
     }
 }
