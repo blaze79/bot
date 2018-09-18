@@ -1,6 +1,7 @@
 package org.silentpom.runner.domain.state;
 
 import org.silentpom.runner.domain.Position;
+import org.silentpom.runner.domain.actors.Hero;
 import org.silentpom.runner.domain.maps.FullMapInfo;
 import org.silentpom.runner.domain.masks.BitMask;
 
@@ -12,9 +13,10 @@ import java.util.List;
  */
 public class GoldOfMap {
     BitMask mask;
-    List<List<Position>> objects;
+    //List<List<Position>> objects;
+    Hero hero;
 
-    public GoldOfMap(FullMapInfo info, int objectsCount) {
+    /*public GoldOfMap(FullMapInfo info, int objectsCount) {
         mask = new BitMask(info.getSimple().rows(), info.getSimple().columns());
         for (Position pos : info.getGold()) {
             mask.setChecked(pos, true);
@@ -24,6 +26,14 @@ public class GoldOfMap {
         for (int i = 0; i < objectsCount; ++i) {
             objects.add(new ArrayList<>(16));
         }
+    }*/
+
+    public GoldOfMap(FullMapInfo info, Hero hero) {
+        mask = new BitMask(info.getSimple().rows(), info.getSimple().columns());
+        for (Position pos : info.getGold()) {
+            mask.setChecked(pos, true);
+        }
+        this.hero = hero;
     }
 
     private boolean isGold(Position pos) {
@@ -35,22 +45,24 @@ public class GoldOfMap {
             return false;
         }
 
-        return !objects.stream()
+        return !hero.wasInPosition(pos);
+
+        /*return !objects.stream()
                 .flatMap(list -> list.stream())
                 .filter(x -> pos.equals(x))
                 .findAny()
-                .isPresent();
+                .isPresent();*/
     }
 
     public void newTick() {
-        objects.forEach(list -> list.add(null));
+        //objects.forEach(list -> list.add(null));
     }
 
     public void tickBack() {
-        objects.forEach(list -> list.remove(list.size() - 1));
+        //objects.forEach(list -> list.remove(list.size() - 1));
     }
 
-    public boolean objectMoved(int object, Position pos) {
+    /*public boolean objectMoved(int object, Position pos) {
         List<Position> positionList = objects.get(object);
 
         positionList.set(positionList.size() - 1, null);
@@ -64,6 +76,6 @@ public class GoldOfMap {
         } else {
             return false;
         }
-    }
+    }*/
 
 }

@@ -38,6 +38,11 @@ public class Position {
         return PositionsCache.make(row + 1, column);
     }
 
+    public final int absDistance(Position pos) {
+        return Math.abs(this.getRow() - pos.getRow()) + Math.abs(this.getColumn() - pos.getColumn());
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

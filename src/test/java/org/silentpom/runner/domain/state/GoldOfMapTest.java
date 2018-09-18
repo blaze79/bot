@@ -15,7 +15,7 @@ import static org.testng.Assert.*;
  * Created by Vlad on 16.09.2018.
  */
 public class GoldOfMapTest {
-    @Test
+    /*@Test
     public void testCheckGold() throws Exception {
         try (
                 InputStream in = this.getClass().getClassLoader()
@@ -62,6 +62,6 @@ public class GoldOfMapTest {
             assertFalse(goldOfMap.checkGold(gold2));
             assertTrue(goldOfMap.checkGold(gold3));
         }
-    }
+    }*/
 
 }

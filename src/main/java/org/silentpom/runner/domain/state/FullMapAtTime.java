@@ -50,7 +50,8 @@ public class FullMapAtTime {
         hunters = info.getEnemy().stream().map(x -> new Hunter(x)).collect(Collectors.toList());
         bots = info.getBots().stream().map(x -> new OtherBot(x)).collect(Collectors.toList());
         commonHoles = new CommonHoles(info.getHoles());
-        goldOfMap = new GoldOfMap(info, holeActors());
+        //goldOfMap = new GoldOfMap(info, holeActors());
+        goldOfMap = new GoldOfMap(info, hero);
 
         clearMap = info.getClearMap();
         createCommonMaps();
@@ -184,9 +185,9 @@ public class FullMapAtTime {
         }
     }
 
-    public void moveHero(Position newPos) {
+    public void processHeroMove(Position newPos, CommandResult result) {
         hero.changePosition(newPos);
-        goldOfMap.objectMoved(0, newPos);
+        hero.changeHole(result.getHole());
     }
 
     private CommonMap createCommonMap(boolean hideHero, int hidedBot, int hidedHunter) {
@@ -230,6 +231,10 @@ public class FullMapAtTime {
 
     public Hero getHero() {
         return hero;
+    }
+
+    public List<Hunter> getHunters() {
+        return hunters;
     }
 
     public CommonMap getHeroView() {
