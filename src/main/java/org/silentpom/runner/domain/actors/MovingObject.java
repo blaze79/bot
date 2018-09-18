@@ -66,7 +66,7 @@ public abstract class MovingObject extends CellObject {
 
     @Override
     public Position position(int time) {
-        for (int i = history.size(); i >= 0; i--) {
+        for (int i = history.size()-1; i >= 0; i--) {
             Position position = history.get(i);
             if (position != null) {
                 return position;

@@ -13,6 +13,7 @@ import org.silentpom.runner.domain.maps.FullMapInfo;
 import org.silentpom.runner.domain.masks.DoubleMask;
 import org.silentpom.runner.domain.state.FullMapAtTime;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.silentpom.runner.domain.Constants.RATE_INFLATION;
@@ -25,6 +26,13 @@ public class OnlyHeroSolver implements ProblemSolver {
     CommandResult tempResult = new CommandResult();
     int maxDepth = 5;
     double[] resTemp;
+    int calls =0;
+
+    public OnlyHeroSolver(int depth) {
+        maxDepth = depth;
+        resTemp = new double[maxDepth + 10];
+        clearRes();
+    }
 
     public OnlyHeroSolver() {
         resTemp = new double[maxDepth + 10];
@@ -50,6 +58,12 @@ public class OnlyHeroSolver implements ProblemSolver {
             resTemp[level] = estimate.getChecked(hero.position(level));
             return null;
         }
+        calls++;
+
+        char[] chars = new char[level];
+        Arrays.fill(chars, '\t');
+        String tabs = new String(chars);
+
 
         mapAtTime.newTick();
         CommonMap heroView = mapAtTime.getHeroView();
@@ -60,17 +74,27 @@ public class OnlyHeroSolver implements ProblemSolver {
                 GameCommand maxCommand = null;
 
                 for (GameCommand command : HERO_COMMANDS) {
+                    hero.changePosition(null);
+                    hero.changeHole(null);
+
                     tempResult.resetPosition(hero.position(level));
 
                     boolean canBeMoved = command.moveInGame(heroView, tempResult, false);
                     if (canBeMoved) {
+                        //System.out.printf("%s (%d) Command %s was used: %b %n", tabs, level, command.getCode(), canBeMoved);
+
                         Position newPosition = tempResult.getPosition();
-                        mapAtTime.processHeroMove(newPosition, tempResult);
+                        CellType oldCellType = mapAtTime.processHeroMove(newPosition, tempResult);
 
                         if (checkKilled(newPosition, mapAtTime, heroView)) {
+                            System.out.printf("%s (%d) Command %s was killed, skipped %n", tabs, level, command.getCode());
                             continue;
                         }
-                        double currentValue = estimatePosition(level, newPosition, mapAtTime, heroView);
+                        double currentValue = estimatePosition(level, newPosition, mapAtTime, heroView, oldCellType);
+                        System.out.printf("%s (%d) Command %s local weight %f. Position: %d %d %n", tabs, level, command.getCode(), currentValue,
+                                newPosition.getRow(), newPosition.getColumn()
+                        );
+
                         tryNextLevel(estimate, mapAtTime, heroView, level);
                         currentValue += GAME_POLICY.reduceWeight(resTemp[level + 1], 1);
 
@@ -82,19 +106,24 @@ public class OnlyHeroSolver implements ProblemSolver {
                 }
 
                 resTemp[level] = maxValue;
-                return maxCommand != null ? maxCommand : DEAD_COMMAND;
+                GameCommand retCommand = (maxCommand != null ? maxCommand : DEAD_COMMAND);
+                System.out.printf("%s (%d) MAX Command  IS %s local weight %f %n", tabs, level, retCommand.getCode(), maxValue);
+                return retCommand;
             } else {
                 tempResult.resetPosition(hero.position(level));
                 resTemp[level] = -1e8;
 
                 lastCommand.moveInGame(heroView, tempResult, false);
+                System.out.printf("%s (%d) Command NO CHANCE %s was used: %b %n", tabs, level, lastCommand.getCode(), true);
                 Position newPosition = tempResult.getPosition();
-                mapAtTime.processHeroMove(newPosition, tempResult);
+                CellType oldCellType = mapAtTime.processHeroMove(newPosition, tempResult);
 
                 if (checkKilled(newPosition, mapAtTime, heroView)) {
                     return DEAD_COMMAND;
                 }
-                double currentValue = estimatePosition(level, newPosition, mapAtTime, heroView);
+                double currentValue = estimatePosition(level, newPosition, mapAtTime, heroView, oldCellType);
+                System.out.printf("%s (%d) Command NO CHANCE %s local weight %f %n", tabs, level, lastCommand.getCode(), currentValue);
+
                 tryNextLevel(estimate, mapAtTime, heroView, level);
                 currentValue += GAME_POLICY.reduceWeight(resTemp[level + 1], 1);
 
@@ -109,7 +138,7 @@ public class OnlyHeroSolver implements ProblemSolver {
     boolean checkKilled(Position newPosition, FullMapAtTime mapAtTime, CommonMap heroView) {
         if (heroView.getCell(newPosition.left()).getCategory() == CellCategory.WALL &&
                 heroView.getCell(newPosition.right()).getCategory() == CellCategory.WALL &&
-                !heroView.getCell(newPosition.right()).isFreeCell()
+                !heroView.getCell(newPosition.down()).isFreeCell()
                 ) {
             return true;
         }
@@ -133,9 +162,9 @@ public class OnlyHeroSolver implements ProblemSolver {
         return false;
     }
 
-    private double estimatePosition(int level, Position newPosition, FullMapAtTime mapAtTime, CommonMap heroView) {
+    private double estimatePosition(int level, Position newPosition, FullMapAtTime mapAtTime, CommonMap heroView, CellType oldCellType) {
         double value = 0;
-        if (heroView.getCell(newPosition) == CellType.GOLD) {
+        if (oldCellType == CellType.GOLD) {
             value += GAME_POLICY.startWeight(newPosition);
         }
         List<Hunter> hunters = mapAtTime.getHunters();
@@ -163,9 +192,22 @@ public class OnlyHeroSolver implements ProblemSolver {
         findGameCommandRec(estimate, mapAtTime, level + 1);
     }
 
+    public int getCalls() {
+        return calls;
+    }
+
+    public double getValue() {
+        return resTemp[0];
+    }
+
+    /*public static GameCommand[] HERO_COMMANDS = {
+            new GameLeftCommand(), new GameUpCommand(), new GameRightCommand(), new GameDownCommand(),
+            new DigLeftCommand(), new DigRightCommand(),
+            new DoNothingCommand()
+    };*/
 
     public static GameCommand[] HERO_COMMANDS = {
-            new GameLeftCommand(), new GameUpCommand(), new GameRightCommand(), new GameDownCommand(),
+            new GameRightCommand(), new GameLeftCommand(), new GameUpCommand(),new GameDownCommand(),
             new DigLeftCommand(), new DigRightCommand(),
             new DoNothingCommand()
     };

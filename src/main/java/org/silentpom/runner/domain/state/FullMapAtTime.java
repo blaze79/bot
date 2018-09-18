@@ -38,6 +38,7 @@ public class FullMapAtTime {
     List<OtherBot> bots;
     CommonHoles commonHoles;
     int tick = 0;
+    int WINDOW = 10;
 
     CommonMap simpleView;
     CommonMap heroView;
@@ -46,16 +47,23 @@ public class FullMapAtTime {
 
 
     public FullMapAtTime(FullMapInfo info) {
+        Position center = info.getHero();
         hero = new Hero(info.getHero());
-        hunters = info.getEnemy().stream().map(x -> new Hunter(x)).collect(Collectors.toList());
-        bots = info.getBots().stream().map(x -> new OtherBot(x)).collect(Collectors.toList());
+        hunters = info.getEnemy().stream()
+                .filter(x -> x.absDistance(center) < WINDOW)
+                .map(x -> new Hunter(x))
+                .collect(Collectors.toList());
+        bots = info.getBots()
+                .stream()
+                .filter(x -> x.absDistance(center) < WINDOW)
+                .map(x -> new OtherBot(x))
+                .collect(Collectors.toList());
         commonHoles = new CommonHoles(info.getHoles());
         //goldOfMap = new GoldOfMap(info, holeActors());
         goldOfMap = new GoldOfMap(info, hero);
 
         clearMap = info.getClearMap();
         createCommonMaps();
-        initCommands();
     }
 
     private int holeActors() {
@@ -73,8 +81,8 @@ public class FullMapAtTime {
         cellType = hero.getCellType(tick, pos, hideHero);
         if (cellType != null) {
             if (cellType.getCategory() == CellCategory.HOLE) {
-                cellType = null;
                 holeCell = cellType;
+                cellType = null;
             } else {
                 return cellType;
             }
@@ -84,8 +92,8 @@ public class FullMapAtTime {
             cellType = bots.get(i).getCellType(tick, pos, hidedBot == i);
             if (cellType != null) {
                 if (cellType.getCategory() == CellCategory.HOLE) {
-                    cellType = null;
                     holeCell = cellType;
+                    cellType = null;
                 } else {
                     return cellType;
                 }
@@ -96,8 +104,8 @@ public class FullMapAtTime {
             cellType = hunters.get(i).getCellType(tick, pos, hidedHunter == i);
             if (cellType != null) {
                 if (cellType.getCategory() == CellCategory.HOLE) {
-                    cellType = null;
                     holeCell = cellType;
+                    cellType = null;
                 } else {
                     return cellType;
                 }
@@ -143,7 +151,7 @@ public class FullMapAtTime {
         }
     }
 
-    public void initCommands() {
+    /*public void initCommands() {
         CommandResult tempResult = new CommandResult();
         initCommand(hero, heroView, tempResult);
 
@@ -155,7 +163,7 @@ public class FullMapAtTime {
         for (int i = 0; i < hunters.size(); ++i) {
             initCommand(hunters.get(i), huntersView.get(i), tempResult);
         }
-    }
+    }*/
 
 
     private void initCommand(MovingObject object, CommonMap mapView, CommandResult tempResult) {
@@ -185,9 +193,11 @@ public class FullMapAtTime {
         }
     }
 
-    public void processHeroMove(Position newPos, CommandResult result) {
+    public CellType processHeroMove(Position newPos, CommandResult result) {
+        CellType old = heroView.getCell(newPos);
         hero.changePosition(newPos);
         hero.changeHole(result.getHole());
+        return old;
     }
 
     private CommonMap createCommonMap(boolean hideHero, int hidedBot, int hidedHunter) {
