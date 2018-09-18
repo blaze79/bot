@@ -12,6 +12,7 @@ package org.silentpom.runner.client;
 import org.silentpom.runner.algo.estimation.Estimator;
 import org.silentpom.runner.algo.estimation.FillerState;
 import org.silentpom.runner.algo.solve.GreedySolver;
+import org.silentpom.runner.algo.solve.OnlyHeroSolver;
 import org.silentpom.runner.algo.solve.ProblemSolver;
 import org.silentpom.runner.algo.solve.commands.GameCommand;
 import org.silentpom.runner.algo.solve.prefilter.Prefilters;
@@ -41,7 +42,8 @@ public class RunnerClient {
 
     MapDecoder mapDecoder = new MapDecoder();
     Estimator estimator = new Estimator();
-    ProblemSolver solver = new GreedySolver();
+    //ProblemSolver solver = new GreedySolver();
+    ProblemSolver solver =new OnlyHeroSolver(7);
     Prefilters prefilters = new Prefilters();
     MonsterGoldCorrector goldCorrector = new MonsterGoldCorrector();
 
@@ -83,7 +85,7 @@ public class RunnerClient {
 
         long time = System.currentTimeMillis();
         // TODO: check it
-        estimator.forceOneMode();
+        //estimator.forceOneMode();
         DoubleMask estimate = estimator.estimate(info);
         long usedTime = time - System.currentTimeMillis();
 
@@ -94,7 +96,10 @@ public class RunnerClient {
             return preCommand.getCode();
         }
 
+        time = System.currentTimeMillis();
         GameCommand bestCommand = solver.findBestCommand(estimate, info);
+        usedTime = time - System.currentTimeMillis();
+        LOGGER.info("Solve done for {} ms", usedTime);
 
         if (bestCommand != null) {
             return bestCommand.getCode();

@@ -61,9 +61,9 @@ public class OnlyHeroSolver implements ProblemSolver {
         }
         calls++;
 
-        char[] chars = new char[level];
-        Arrays.fill(chars, '\t');
-        String tabs = new String(chars);
+//        char[] chars = new char[level];
+//        Arrays.fill(chars, '\t');
+//        String tabs = new String(chars);
 
 
         mapAtTime.newTick();
@@ -82,19 +82,17 @@ public class OnlyHeroSolver implements ProblemSolver {
 
                     boolean canBeMoved = command.moveInGame(heroView, tempResult, false);
                     if (canBeMoved) {
-                        //System.out.printf("%s (%d) Command %s was used: %b %n", tabs, level, command.getCode(), canBeMoved);
-
                         Position newPosition = tempResult.getPosition();
                         CellType oldCellType = mapAtTime.processHeroMove(newPosition, tempResult);
 
                         if (checkKilled(newPosition, mapAtTime, heroView)) {
-                            System.out.printf("%s (%d) Command %s was killed, skipped %n", tabs, level, command.getCode());
+//                            System.out.printf("%s (%d) Command %s was killed, skipped %n", tabs, level, command.getCode());
                             continue;
                         }
                         double currentValue = estimatePosition(level, newPosition, mapAtTime, heroView, oldCellType, tempResult.getHole());
-                        System.out.printf("%s (%d) Command %s local weight %f. Position: %d %d %n", tabs, level, command.getCode(), currentValue,
-                                newPosition.getRow(), newPosition.getColumn()
-                        );
+//                        System.out.printf("%s (%d) Command %s local weight %f. Position: %d %d %n", tabs, level, command.getCode(), currentValue,
+//                                newPosition.getRow(), newPosition.getColumn()
+//                        );
 
                         tryNextLevel(estimate, mapAtTime, heroView, level);
                         currentValue += GAME_POLICY.reduceWeight(resTemp[level + 1], 1);
@@ -108,14 +106,14 @@ public class OnlyHeroSolver implements ProblemSolver {
 
                 resTemp[level] = maxValue;
                 GameCommand retCommand = (maxCommand != null ? maxCommand : DEAD_COMMAND);
-                System.out.printf("%s (%d) MAX Command  IS %s local weight %f %n", tabs, level, retCommand.getCode(), maxValue);
+//                System.out.printf("%s (%d) MAX Command  IS %s local weight %f %n", tabs, level, retCommand.getCode(), maxValue);
                 return retCommand;
             } else {
                 tempResult.resetPosition(hero.position(level));
                 resTemp[level] = -1e8;
 
                 lastCommand.moveInGame(heroView, tempResult, false);
-                System.out.printf("%s (%d) Command NO CHANCE %s was used: %b %n", tabs, level, lastCommand.getCode(), true);
+//                System.out.printf("%s (%d) Command NO CHANCE %s was used: %b %n", tabs, level, lastCommand.getCode(), true);
                 Position newPosition = tempResult.getPosition();
                 CellType oldCellType = mapAtTime.processHeroMove(newPosition, tempResult);
 
@@ -123,7 +121,7 @@ public class OnlyHeroSolver implements ProblemSolver {
                     return DEAD_COMMAND;
                 }
                 double currentValue = estimatePosition(level, newPosition, mapAtTime, heroView, oldCellType,  tempResult.getHole());
-                System.out.printf("%s (%d) Command NO CHANCE %s local weight %f %n", tabs, level, lastCommand.getCode(), currentValue);
+//                System.out.printf("%s (%d) Command NO CHANCE %s local weight %f %n", tabs, level, lastCommand.getCode(), currentValue);
 
                 tryNextLevel(estimate, mapAtTime, heroView, level);
                 currentValue += GAME_POLICY.reduceWeight(resTemp[level + 1], 1);
