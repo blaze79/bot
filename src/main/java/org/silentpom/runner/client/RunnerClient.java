@@ -17,6 +17,7 @@ import org.silentpom.runner.algo.solve.commands.GameCommand;
 import org.silentpom.runner.algo.solve.prefilter.Prefilters;
 import org.silentpom.runner.domain.maps.FullMapInfo;
 import org.silentpom.runner.domain.maps.MapDecoder;
+import org.silentpom.runner.domain.maps.MonsterGoldCorrector;
 import org.silentpom.runner.domain.maps.SimpleMap;
 import org.silentpom.runner.domain.masks.DoubleMask;
 import org.silentpom.runner.replay.Replayer;
@@ -42,6 +43,7 @@ public class RunnerClient {
     Estimator estimator = new Estimator();
     ProblemSolver solver = new GreedySolver();
     Prefilters prefilters = new Prefilters();
+    MonsterGoldCorrector goldCorrector = new MonsterGoldCorrector();
 
     public void startEndConnect() throws Exception {
         final GameClientEndpoint clientEndPoint = new GameClientEndpoint(new URI(url));
@@ -77,6 +79,7 @@ public class RunnerClient {
     }
 
     private String processStep(FullMapInfo info) {
+        goldCorrector.correctMonsterGold(info);
 
         long time = System.currentTimeMillis();
         // TODO: check it

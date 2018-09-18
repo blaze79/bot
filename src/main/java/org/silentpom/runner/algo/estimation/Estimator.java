@@ -155,6 +155,7 @@ public class Estimator {
     private List<Position> filterGolds(List<Position> golds, Position hero) {
         long nearGold = golds.stream().filter(gold -> distance(gold, hero) < WINDOW).count();
         if (nearGold <= closeGold) {
+            LOGGER.debug("NO GOLD IN WINDOW,  full scan", WINDOW);
             return golds;
         }
 
