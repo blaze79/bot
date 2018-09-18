@@ -55,7 +55,7 @@ public abstract class AbstractFiller {
         currentBorder.clear();
         newGeneration.clear();
 
-        FillerState init = new FillerState(start, policy.startWeight());
+        FillerState init = new FillerState(start, policy.startWeight(start));
         mark(init);
         swapBorders();
 

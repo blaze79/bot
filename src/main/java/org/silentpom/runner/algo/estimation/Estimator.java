@@ -34,7 +34,7 @@ public class Estimator {
 
     int goldmodeCounter = 0;
 
-    int WINDOW = 30;
+    int WINDOW = 40;
     int closeGold = 2;
 
     public DoubleMask estimate(FullMapInfo position) {
@@ -66,9 +66,15 @@ public class Estimator {
         }
 
         if (decreaseOneGoldMode() || checkLocalMaximum(position, mask, position.getHero())) {
-            Optional<FillerResultHolder> min = goldenWays.stream().min(
+//            Optional<FillerResultHolder> min = goldenWays.stream().min(
+//                    Comparator.comparing(
+//                            result -> result.getHeroState().getGeneration()
+//                    )
+//            );
+
+            Optional<FillerResultHolder> min = goldenWays.stream().max(
                     Comparator.comparing(
-                            result -> result.getHeroState().getGeneration()
+                            result -> result.getHeroState().getValue()
                     )
             );
 

@@ -1,6 +1,7 @@
 package org.silentpom.runner.algo.estimation.policy;
 
 import org.silentpom.runner.domain.Constants;
+import org.silentpom.runner.domain.Position;
 
 /**
  * Created by Vlad on 10.09.2018.
@@ -10,6 +11,7 @@ import org.silentpom.runner.domain.Constants;
 public class LinearWeightPolicy implements WeightPolicy {
     double weight;
     double rate = Constants.RATE_INFLATION;
+    double altitudeRate = Constants.VERTICAL_INFLATION;
 
     public LinearWeightPolicy(double weight) {
         this.weight = weight;
@@ -20,9 +22,10 @@ public class LinearWeightPolicy implements WeightPolicy {
         this.rate = rate;
     }
 
+
     @Override
-    public double startWeight() {
-        return weight;
+    public double startWeight(Position pos) {
+        return weight * Math.pow(altitudeRate, pos.getRow());
     }
 
     @Override
