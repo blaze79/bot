@@ -167,4 +167,55 @@ public class BackFillerTest {
         }
     }
 
+
+    @Test
+    public void testAnomaly2() throws Exception {
+        try (
+                InputStream in = this.getClass().getClassLoader()
+                        .getResourceAsStream("anomalyMap2.txt");
+                InputStreamReader reader = new InputStreamReader(in, UTF_8)) {
+            SimpleMap simpleMap = SimpleMap.fromFile(reader);
+            simpleMap.print();
+
+            FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
+
+            Estimator estimator = new Estimator();
+            estimator.forceOneMode();
+            estimator.estimate(info);
+
+            FillerState heroState = Estimator.BEST_SINGLE.getHeroState();
+            List<FillerState> fillerStates = heroState.asList();
+
+            System.out.printf("Found solution steps %d  value %f step %s %n",
+                    heroState.getGeneration(),
+                    heroState.getValue(),
+                    heroState.getCommand().getCode()
+            );
+
+            info.fakeHero(heroState.getParent().getPosition());
+            estimator.estimate(info);
+            heroState = Estimator.BEST_SINGLE.getHeroState();
+
+            System.out.printf("Found solution steps %d  value %f step %s %n",
+                    heroState.getGeneration(),
+                    heroState.getValue(),
+                    heroState.getCommand().getCode()
+            );
+
+            info.fakeHero(heroState.getParent().getPosition());
+            estimator.estimate(info);
+            heroState = Estimator.BEST_SINGLE.getHeroState();
+
+            System.out.printf("Found solution steps %d  value %f step %s %n",
+                    heroState.getGeneration(),
+                    heroState.getValue(),
+                    heroState.getCommand().getCode()
+            );
+
+
+            Replayer replayer = new Replayer();
+            replayer.replay(info.getClearMap(), fillerStates);
+        }
+    }
+
 }

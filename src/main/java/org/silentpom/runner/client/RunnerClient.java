@@ -79,6 +79,7 @@ public class RunnerClient {
     private String processStep(FullMapInfo info) {
 
         long time = System.currentTimeMillis();
+        // TODO: check it
         estimator.forceOneMode();
         DoubleMask estimate = estimator.estimate(info);
         long usedTime = time - System.currentTimeMillis();

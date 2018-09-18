@@ -17,6 +17,7 @@ public class SimpleMap implements CommonMap {
     int rows;
     int columns;
     CellType[][] cells;
+    public static final String UTF8_BOM = "\uFEFF";
 
     public SimpleMap(int rows, int columns) {
         this.rows = rows;
@@ -107,6 +108,9 @@ public class SimpleMap implements CommonMap {
         try (BufferedReader br = new BufferedReader(reader)) {
             String strLine;
             while ((strLine = br.readLine()) != null) {
+                if(strLine.startsWith(UTF8_BOM)) {
+                    strLine = strLine.substring(1);
+                }
                 arr.add(strLine);
             }
         } catch (IOException e) {

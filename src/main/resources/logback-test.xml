@@ -46,9 +46,9 @@
         <appender-ref ref="FILE" />
     </root>
 
-    <logger level="INFO" name="org.silentpom.runner.client.RunnerClient" additivity="true" >
-        <appender-ref ref="FILE" />
-    </logger>
+    <!--<logger level="INFO" name="org.silentpom.runner.client.RunnerClient" additivity="true" >-->
+        <!--<appender-ref ref="FILE" />-->
+    <!--</logger>-->
 
     <logger level="INFO" name="org.silentpom.runner.domain.maps.MapDecoder" additivity="true" >
         <appender-ref ref="MAP" />
