@@ -34,6 +34,7 @@ public class OnlyHeroSolverTest {
 
             //System.out.println(estimation.getStringView());
             //Thread.sleep(5000);
+            //estimation=new DoubleMask(estimation.getRows(), estimation.getColumns());
 
             for (int i = 3; i < 8; ++i) {
                 OnlyHeroSolver heroSolver = new OnlyHeroSolver(i);
@@ -66,6 +67,7 @@ public class OnlyHeroSolverTest {
 
             //System.out.println(estimation.getStringView());
             //Thread.sleep(5000);
+            //estimation=new DoubleMask(estimation.getRows(), estimation.getColumns());
 
             for (int i = 3; i < 8; ++i) {
                 OnlyHeroSolver heroSolver = new OnlyHeroSolver(i);
@@ -147,10 +149,10 @@ public class OnlyHeroSolverTest {
     }
 
     @Test
-    public void testFindBestCommand4() throws Exception {
+    public void testEnemy1() throws Exception {
         try (
                 InputStream in = this.getClass().getClassLoader()
-                        .getResourceAsStream("mapHunt4.txt");
+                        .getResourceAsStream("enemy1.txt");
                 InputStreamReader reader = new InputStreamReader(in, UTF_8)) {
             SimpleMap simpleMap = SimpleMap.fromFile(reader);
             simpleMap.print();
@@ -163,7 +165,39 @@ public class OnlyHeroSolverTest {
             //System.out.println(estimation.getStringView());
             //Thread.sleep(5000);
 
-            for (int i = 3; i < 8; ++i) {
+            for (int i = 4; i < 5; ++i) {
+                OnlyHeroSolver heroSolver = new OnlyHeroSolver(i);
+                long time = System.currentTimeMillis();
+                GameCommand bestCommand = heroSolver.findBestCommand(estimation, info);
+                time = System.currentTimeMillis() - time;
+                System.out.printf("Command: %s, value: %f, calls: %d, time: %d ms %n",
+                        bestCommand.getCode(),
+                        heroSolver.getValue(),
+                        heroSolver.getCalls(),
+                        time
+                );
+            }
+        }
+    }
+
+    @Test
+    public void testEnemy2() throws Exception {
+        try (
+                InputStream in = this.getClass().getClassLoader()
+                        .getResourceAsStream("enemy2.txt");
+                InputStreamReader reader = new InputStreamReader(in, UTF_8)) {
+            SimpleMap simpleMap = SimpleMap.fromFile(reader);
+            simpleMap.print();
+
+            FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
+
+            Estimator estimator = new Estimator();
+            DoubleMask estimation = estimator.estimate(info);
+
+            //System.out.println(estimation.getStringView());
+            //Thread.sleep(5000);
+
+            for (int i = 4; i < 5; ++i) {
                 OnlyHeroSolver heroSolver = new OnlyHeroSolver(i);
                 long time = System.currentTimeMillis();
                 GameCommand bestCommand = heroSolver.findBestCommand(estimation, info);

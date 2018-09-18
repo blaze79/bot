@@ -12,6 +12,7 @@ import org.silentpom.runner.domain.maps.CommonMap;
 import org.silentpom.runner.domain.maps.FullMapInfo;
 import org.silentpom.runner.domain.masks.DoubleMask;
 import org.silentpom.runner.domain.state.FullMapAtTime;
+import org.silentpom.runner.domain.state.PositionsCache;
 
 import java.util.Arrays;
 import java.util.List;
@@ -26,7 +27,7 @@ public class OnlyHeroSolver implements ProblemSolver {
     CommandResult tempResult = new CommandResult();
     int maxDepth = 5;
     double[] resTemp;
-    int calls =0;
+    int calls = 0;
 
     public OnlyHeroSolver(int depth) {
         maxDepth = depth;
@@ -90,7 +91,7 @@ public class OnlyHeroSolver implements ProblemSolver {
                             System.out.printf("%s (%d) Command %s was killed, skipped %n", tabs, level, command.getCode());
                             continue;
                         }
-                        double currentValue = estimatePosition(level, newPosition, mapAtTime, heroView, oldCellType);
+                        double currentValue = estimatePosition(level, newPosition, mapAtTime, heroView, oldCellType, tempResult.getHole());
                         System.out.printf("%s (%d) Command %s local weight %f. Position: %d %d %n", tabs, level, command.getCode(), currentValue,
                                 newPosition.getRow(), newPosition.getColumn()
                         );
@@ -121,7 +122,7 @@ public class OnlyHeroSolver implements ProblemSolver {
                 if (checkKilled(newPosition, mapAtTime, heroView)) {
                     return DEAD_COMMAND;
                 }
-                double currentValue = estimatePosition(level, newPosition, mapAtTime, heroView, oldCellType);
+                double currentValue = estimatePosition(level, newPosition, mapAtTime, heroView, oldCellType,  tempResult.getHole());
                 System.out.printf("%s (%d) Command NO CHANCE %s local weight %f %n", tabs, level, lastCommand.getCode(), currentValue);
 
                 tryNextLevel(estimate, mapAtTime, heroView, level);
@@ -162,7 +163,7 @@ public class OnlyHeroSolver implements ProblemSolver {
         return false;
     }
 
-    private double estimatePosition(int level, Position newPosition, FullMapAtTime mapAtTime, CommonMap heroView, CellType oldCellType) {
+    private double estimatePosition(int level, Position newPosition, FullMapAtTime mapAtTime, CommonMap heroView, CellType oldCellType, Position newHole) {
         double value = 0;
         if (oldCellType == CellType.GOLD) {
             value += GAME_POLICY.startWeight(newPosition);
@@ -171,16 +172,31 @@ public class OnlyHeroSolver implements ProblemSolver {
         for (int h = 0; h < hunters.size(); ++h) {
             Hunter hunter = hunters.get(h);
             Position hunterPosition = hunter.position(level);
-            if (newPosition.absDistance(hunterPosition) == 1) {
-                value -= Constants.NEAR_HUNTER;
+            if (heroView.getCell(hunterPosition.down()).getCategory() == CellCategory.HOLE) {
+                continue;
             }
-            if (hunterPosition.getRow() == newPosition.getRow()) {
+
+            if (hunterPosition.getRow() == newPosition.getRow() && newPosition.absDistance(hunterPosition) < 4) {
                 int min = Math.min(hunterPosition.getColumn(), newPosition.getColumn());
                 int max = Math.max(hunterPosition.getColumn(), newPosition.getColumn());
+
+                int oldHoles = 0, allHoles = 0;
                 for (int i = min; i < max; i++) {
-                    if (heroView.getCell(hunterPosition.getRow(), i).getCategory() == CellCategory.HOLE) {
-                        value += Constants.NEAR_HUNTER;
-                        break;
+                    Position down = PositionsCache.make(hunterPosition.getRow() + 1, i);
+                    if (heroView.getCell(down).getCategory() == CellCategory.HOLE) {
+                        allHoles++;
+                        if (!down.equals(newHole)) {
+                            oldHoles++;
+                        }
+                    }
+                }
+
+
+                if(oldHoles ==0 && allHoles>0) {
+                    value += Constants.NEAR_HOLE_HUNTER;
+                } else {
+                    if(oldHoles==0) {
+                        value += Constants.NEAR_HUNTER*(4 - newPosition.absDistance(hunterPosition))/4;
                     }
                 }
             }
@@ -207,7 +223,7 @@ public class OnlyHeroSolver implements ProblemSolver {
     };*/
 
     public static GameCommand[] HERO_COMMANDS = {
-            new GameRightCommand(), new GameLeftCommand(), new GameUpCommand(),new GameDownCommand(),
+            new GameRightCommand(), new GameLeftCommand(), new GameUpCommand(), new GameDownCommand(),
             new DigLeftCommand(), new DigRightCommand(),
             new DoNothingCommand()
     };
