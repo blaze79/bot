@@ -10,6 +10,7 @@ import org.silentpom.runner.domain.masks.DoubleMask;
  */
 public class Prefilters {
     SinglePrefilter[] prefilters = {
+            new ManiacPrefilter(),
             new StayOnOnePositionFilter(),
             new CatchInHolePrefilter()
     };
