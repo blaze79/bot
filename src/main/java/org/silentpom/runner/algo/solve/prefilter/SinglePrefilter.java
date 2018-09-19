@@ -9,4 +9,8 @@ import org.silentpom.runner.domain.maps.FullMapInfo;
  */
 public interface SinglePrefilter {
     public GameCommand checkStupidSituations(Estimator estimator, FullMapInfo info);
+
+    default public void takeResult(FullMapInfo info, GameCommand command) {
+
+    };
 }

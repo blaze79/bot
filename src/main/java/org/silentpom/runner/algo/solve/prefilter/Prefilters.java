@@ -12,7 +12,8 @@ public class Prefilters {
     SinglePrefilter[] prefilters = {
             new ManiacPrefilter(),
             new StayOnOnePositionFilter(),
-            new CatchInHolePrefilter()
+            new CatchInHolePrefilter(),
+            new NoMoreGoldFilter()
     };
 
     public GameCommand checkStupidSituations(Estimator estimator, FullMapInfo info) {
@@ -23,6 +24,12 @@ public class Prefilters {
             }
         }
         return null;
+    }
+
+    public void takeResult(FullMapInfo info, GameCommand command) {
+        for (SinglePrefilter prefilter : prefilters) {
+            prefilter.takeResult(info, command);
+        }
     }
 
 }

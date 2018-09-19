@@ -14,6 +14,7 @@ import org.silentpom.runner.algo.estimation.FillerState;
 import org.silentpom.runner.algo.solve.GreedySolver;
 import org.silentpom.runner.algo.solve.OnlyHeroSolver;
 import org.silentpom.runner.algo.solve.ProblemSolver;
+import org.silentpom.runner.algo.solve.commands.DoNothingCommand;
 import org.silentpom.runner.algo.solve.commands.GameCommand;
 import org.silentpom.runner.algo.solve.prefilter.Prefilters;
 import org.silentpom.runner.domain.maps.FullMapInfo;
@@ -102,9 +103,11 @@ public class RunnerClient {
         LOGGER.info("Solve done for {} ms", usedTime);
 
         if (bestCommand != null) {
+            prefilters.takeResult(info, bestCommand);
             return bestCommand.getCode();
         }
 
+        prefilters.takeResult(info, new DoNothingCommand());
         return "WAIT";
     }
 }
