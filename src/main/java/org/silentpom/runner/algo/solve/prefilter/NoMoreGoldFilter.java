@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 public class NoMoreGoldFilter implements SinglePrefilter {
     int count = 0;
-    int LIMIT = 45;
+    int LIMIT = 40;
     public static Logger LOGGER = LoggerFactory.getLogger(NoMoreGoldFilter.class);
 
     @Override

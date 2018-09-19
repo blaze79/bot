@@ -14,6 +14,7 @@ import org.silentpom.runner.algo.estimation.FillerState;
 import org.silentpom.runner.algo.solve.GreedySolver;
 import org.silentpom.runner.algo.solve.OnlyHeroSolver;
 import org.silentpom.runner.algo.solve.ProblemSolver;
+import org.silentpom.runner.algo.solve.commands.DieCommand;
 import org.silentpom.runner.algo.solve.commands.DoNothingCommand;
 import org.silentpom.runner.algo.solve.commands.GameCommand;
 import org.silentpom.runner.algo.solve.prefilter.Prefilters;
@@ -91,6 +92,15 @@ public class RunnerClient {
         long usedTime = time - System.currentTimeMillis();
 
         LOGGER.info("Estimation done for {} ms", usedTime);
+
+        try {
+            if (BEST_SINGLE.getHeroState().getGeneration() > 25) {
+                return new DieCommand().getCode();
+            }
+        }catch (Exception ex) {
+
+        }
+
 
         GameCommand preCommand = prefilters.checkStupidSituations(estimator, info);
         if (preCommand != null) {
