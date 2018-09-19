@@ -63,6 +63,7 @@ public class FullMapAtTime {
         goldOfMap = new GoldOfMap(info, hero);
 
         clearMap = info.getClearMap();
+
         createCommonMaps();
     }
 
@@ -253,6 +254,10 @@ public class FullMapAtTime {
 
     public CommonMap getSimpleMap() {
         return simpleView;
+    }
+
+    public ClearMap getClearMap() {
+        return clearMap;
     }
 
     public static GameCommand GRAVITY = new GravityFallsCommand();

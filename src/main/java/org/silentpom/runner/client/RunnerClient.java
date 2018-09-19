@@ -43,7 +43,7 @@ public class RunnerClient {
     MapDecoder mapDecoder = new MapDecoder();
     Estimator estimator = new Estimator();
     //ProblemSolver solver = new GreedySolver();
-    ProblemSolver solver =new OnlyHeroSolver(7);
+    ProblemSolver solver =new OnlyHeroSolver(9);
     Prefilters prefilters = new Prefilters();
     MonsterGoldCorrector goldCorrector = new MonsterGoldCorrector();
 
@@ -71,7 +71,7 @@ public class RunnerClient {
 
         while (true) {
             //clientEndPoint.sendMessage(getMessage("Hi There!!"));
-            Thread.sleep(300000);
+            Thread.sleep(5000);
         }
     }
 
@@ -85,7 +85,7 @@ public class RunnerClient {
 
         long time = System.currentTimeMillis();
         // TODO: check it
-        //estimator.forceOneMode();
+        estimator.forceOneMode();
         DoubleMask estimate = estimator.estimate(info);
         long usedTime = time - System.currentTimeMillis();
 

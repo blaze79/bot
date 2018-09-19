@@ -120,7 +120,7 @@ public class OnlyHeroSolver implements ProblemSolver {
                 if (checkKilled(newPosition, mapAtTime, heroView)) {
                     return DEAD_COMMAND;
                 }
-                double currentValue = estimatePosition(level, newPosition, mapAtTime, heroView, oldCellType,  tempResult.getHole());
+                double currentValue = estimatePosition(level, newPosition, mapAtTime, heroView, oldCellType, tempResult.getHole());
 //                System.out.printf("%s (%d) Command NO CHANCE %s local weight %f %n", tabs, level, lastCommand.getCode(), currentValue);
 
                 tryNextLevel(estimate, mapAtTime, heroView, level);
@@ -148,11 +148,14 @@ public class OnlyHeroSolver implements ProblemSolver {
             Position hunterPosition = hunter.position(0);
             if (newPosition.absDistance(hunterPosition) == 1) {
                 if (hunterPosition.getRow() == newPosition.getRow()) {
-                    if (heroView.getCell(hunterPosition.down()).canStayOn()) {
+                    if (heroView.getCell(hunterPosition.down()).canStayOn() ||
+                            mapAtTime.getClearMap().getCell(hunterPosition).getCategory() == CellCategory.STAIRS) {
                         return true;
                     }
                 } else {
                     if (hunterPosition.getRow() < newPosition.getRow()) {
+                        return true;
+                    } else if(mapAtTime.getClearMap().getCell(hunterPosition) ==  CellType.LADDER) {
                         return true;
                     }
                 }
@@ -190,20 +193,22 @@ public class OnlyHeroSolver implements ProblemSolver {
                 }
 
 
-                if(oldHoles ==0 && allHoles>0) {
+                if (oldHoles == 0 && allHoles > 0) {
                     value += Constants.NEAR_HOLE_HUNTER;
                 } else {
-                    if(oldHoles==0) {
-                        value += Constants.NEAR_HUNTER*(4 - newPosition.absDistance(hunterPosition))/4;
+                    if (oldHoles == 0) {
+                        value += Constants.NEAR_HUNTER * (4 - newPosition.absDistance(hunterPosition)) / 4;
                     }
                 }
+            } else if(newPosition.absDistance(hunterPosition) < 4){
+                value += Constants.NEAR_HUNTER * (4 - newPosition.absDistance(hunterPosition)) / 4;
             }
         }
         return value;
     }
 
-    private void tryNextLevel(DoubleMask estimate, FullMapAtTime mapAtTime, CommonMap heroView, int level) {
-        findGameCommandRec(estimate, mapAtTime, level + 1);
+    private GameCommand tryNextLevel(DoubleMask estimate, FullMapAtTime mapAtTime, CommonMap heroView, int level) {
+        return findGameCommandRec(estimate, mapAtTime, level + 1);
     }
 
     public int getCalls() {

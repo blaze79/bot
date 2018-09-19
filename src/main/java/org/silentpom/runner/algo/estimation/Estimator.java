@@ -89,6 +89,8 @@ public class Estimator {
                 } else {
                     LOGGER.debug("Player in local maximum but gold is near {}", pathLen);
                     BEST_SINGLE = minHolder;
+                    // TODO: return brackes algorithm?
+                    return minHolder.getResult();
                 }
             }
         }
@@ -159,7 +161,8 @@ public class Estimator {
             return golds;
         }
 
-        return golds.stream().filter(gold -> distance(gold, hero) < WINDOW).collect(Collectors.toList());
+        //return golds.stream().filter(gold -> distance(gold, hero) < WINDOW).collect(Collectors.toList());
+        return golds;
     }
 
     private int distance(Position a, Position b) {
