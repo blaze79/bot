@@ -21,10 +21,10 @@ public enum CellType {
     /**
      * Стена со временем зарастает. Когда процесс начинается - мы видим таймер:
      */
-    PIT_FILL_1('1', CellCategory.HOLE),
-    PIT_FILL_2('2', CellCategory.HOLE),
-    PIT_FILL_3('3', CellCategory.HOLE),
-    PIT_FILL_4('4', CellCategory.HOLE),
+    PIT_FILL_1('4', CellCategory.HOLE),
+    PIT_FILL_2('3', CellCategory.HOLE),
+    PIT_FILL_3('2', CellCategory.HOLE),
+    PIT_FILL_4('1', CellCategory.HOLE),
     // фейковая яма для новых ям. они первые 4 хода видны как пустота
     PIT_FILL_8('8', CellCategory.HOLE),
     /**

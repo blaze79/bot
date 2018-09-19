@@ -28,10 +28,12 @@ public class OnlyHeroSolver implements ProblemSolver {
     int maxDepth = 5;
     double[] resTemp;
     int calls = 0;
+    boolean[] wasGold;
 
     public OnlyHeroSolver(int depth) {
         maxDepth = depth;
         resTemp = new double[maxDepth + 10];
+        wasGold = new boolean[maxDepth + 10];
         clearRes();
     }
 
@@ -51,24 +53,31 @@ public class OnlyHeroSolver implements ProblemSolver {
         for (int i = 0; i < resTemp.length; ++i) {
             resTemp[i] = 0;
         }
+
+        for (int i = 0; i < wasGold.length; ++i) {
+            wasGold[i] = false;
+        }
     }
 
     private GameCommand findGameCommandRec(DoubleMask estimate, FullMapAtTime mapAtTime, int level) {
         Hero hero = mapAtTime.getHero();
         if (level == maxDepth) {
-            resTemp[level] = estimate.getChecked(hero.position(level));
+            //resTemp[level] = estimate.getChecked(hero.position(level));
+            resTemp[level] = 0;
             return null;
         }
         calls++;
 
-//        char[] chars = new char[level];
-//        Arrays.fill(chars, '\t');
-//        String tabs = new String(chars);
+        char[] chars = new char[level];
+        Arrays.fill(chars, '\t');
+        String tabs = new String(chars);
 
 
         mapAtTime.newTick();
         CommonMap heroView = mapAtTime.getHeroView();
         GameCommand lastCommand = hero.getLastCommand();
+        double lastEstimation = estimate.getChecked(hero.position(level));
+
         try {
             if (lastCommand == null) {
                 double maxValue = -1e8;
@@ -77,6 +86,7 @@ public class OnlyHeroSolver implements ProblemSolver {
                 for (GameCommand command : HERO_COMMANDS) {
                     hero.changePosition(null);
                     hero.changeHole(null);
+                    wasGold[level] = false;
 
                     tempResult.resetPosition(hero.position(level));
 
@@ -90,6 +100,9 @@ public class OnlyHeroSolver implements ProblemSolver {
                             continue;
                         }
                         double currentValue = estimatePosition(level, newPosition, mapAtTime, heroView, oldCellType, tempResult.getHole());
+                        double newEstimation = estimate.getChecked(newPosition);
+                        currentValue += estimateField(level, lastEstimation, newEstimation);
+
 //                        System.out.printf("%s (%d) Command %s local weight %f. Position: %d %d %n", tabs, level, command.getCode(), currentValue,
 //                                newPosition.getRow(), newPosition.getColumn()
 //                        );
@@ -111,16 +124,21 @@ public class OnlyHeroSolver implements ProblemSolver {
             } else {
                 tempResult.resetPosition(hero.position(level));
                 resTemp[level] = -1e8;
+                wasGold[level] = false;
 
                 lastCommand.moveInGame(heroView, tempResult, false);
-//                System.out.printf("%s (%d) Command NO CHANCE %s was used: %b %n", tabs, level, lastCommand.getCode(), true);
+
                 Position newPosition = tempResult.getPosition();
                 CellType oldCellType = mapAtTime.processHeroMove(newPosition, tempResult);
 
                 if (checkKilled(newPosition, mapAtTime, heroView)) {
+//                    System.out.printf("%s (%d) Command %s was killed, skipped %n", tabs, level, lastCommand.getCode());
                     return DEAD_COMMAND;
                 }
                 double currentValue = estimatePosition(level, newPosition, mapAtTime, heroView, oldCellType, tempResult.getHole());
+                double newEstimation = estimate.getChecked(newPosition);
+                currentValue += estimateField(level, lastEstimation, newEstimation);
+
 //                System.out.printf("%s (%d) Command NO CHANCE %s local weight %f %n", tabs, level, lastCommand.getCode(), currentValue);
 
                 tryNextLevel(estimate, mapAtTime, heroView, level);
@@ -132,6 +150,16 @@ public class OnlyHeroSolver implements ProblemSolver {
         } finally {
             mapAtTime.tickBack();
         }
+    }
+
+    double estimateField(int level, double lastEstimation, double newEstimation) {
+        for(int i=0; i<=level; ++i) {
+            if(wasGold[i]) {
+                return 0;
+            }
+        }
+
+        return newEstimation - lastEstimation;
     }
 
     boolean checkKilled(Position newPosition, FullMapAtTime mapAtTime, CommonMap heroView) {
@@ -155,7 +183,7 @@ public class OnlyHeroSolver implements ProblemSolver {
                 } else {
                     if (hunterPosition.getRow() < newPosition.getRow()) {
                         return true;
-                    } else if(mapAtTime.getClearMap().getCell(hunterPosition) ==  CellType.LADDER) {
+                    } else if (mapAtTime.getClearMap().getCell(hunterPosition) == CellType.LADDER) {
                         return true;
                     }
                 }
@@ -168,6 +196,7 @@ public class OnlyHeroSolver implements ProblemSolver {
         double value = 0;
         if (oldCellType == CellType.GOLD) {
             value += GAME_POLICY.startWeight(newPosition);
+            wasGold[level] = true;
         }
         List<Hunter> hunters = mapAtTime.getHunters();
         for (int h = 0; h < hunters.size(); ++h) {
@@ -182,7 +211,7 @@ public class OnlyHeroSolver implements ProblemSolver {
                 int max = Math.max(hunterPosition.getColumn(), newPosition.getColumn());
 
                 int oldHoles = 0, allHoles = 0;
-                for (int i = min; i < max; i++) {
+                for (int i = min + 1; i < max; i++) {
                     Position down = PositionsCache.make(hunterPosition.getRow() + 1, i);
                     if (heroView.getCell(down).getCategory() == CellCategory.HOLE) {
                         allHoles++;
@@ -200,7 +229,7 @@ public class OnlyHeroSolver implements ProblemSolver {
                         value += Constants.NEAR_HUNTER * (4 - newPosition.absDistance(hunterPosition)) / 4;
                     }
                 }
-            } else if(newPosition.absDistance(hunterPosition) < 4){
+            } else if (newPosition.absDistance(hunterPosition) < 4) {
                 value += Constants.NEAR_HUNTER * (4 - newPosition.absDistance(hunterPosition)) / 4;
             }
         }

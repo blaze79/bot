@@ -278,6 +278,44 @@ public class OnlyHeroSolverTest {
     }
 
 
+    @Test
+    public void testStop1() throws Exception {
+        try (
+                InputStream in = this.getClass().getClassLoader()
+                        .getResourceAsStream("stop1.txt");
+                InputStreamReader reader = new InputStreamReader(in, UTF_8)) {
+            SimpleMap simpleMap = SimpleMap.fromFile(reader);
+            simpleMap.print();
+
+            FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
+
+            Estimator estimator = new Estimator();
+            estimator.forceOneMode();
+            DoubleMask estimation = estimator.estimate(info);
+            //estimation = new DoubleMask(simpleMap.rows(), simpleMap.columns());
+
+            //System.out.println(estimation.getStringView());
+            //Thread.sleep(5000);
+
+            for (int i = 5; i < 6; ++i) {
+                OnlyHeroSolver heroSolver = new OnlyHeroSolver(i);
+                long time = System.currentTimeMillis();
+                GameCommand bestCommand = heroSolver.findBestCommand(estimation, info);
+                time = System.currentTimeMillis() - time;
+                System.out.printf("Command: %s, value: %f, calls: %d, time: %d ms %n",
+                        bestCommand.getCode(),
+                        heroSolver.getValue(),
+                        heroSolver.getCalls(),
+                        time
+                );
+            }
+        }
+    }
+
+
+
+
+
 
     @DataProvider(name = "files")
     public static Object[][] files() {

@@ -161,8 +161,7 @@ public class Estimator {
             return golds;
         }
 
-        //return golds.stream().filter(gold -> distance(gold, hero) < WINDOW).collect(Collectors.toList());
-        return golds;
+        return golds.stream().filter(gold -> distance(gold, hero) < WINDOW).collect(Collectors.toList());
     }
 
     private int distance(Position a, Position b) {
