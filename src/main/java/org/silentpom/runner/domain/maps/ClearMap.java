@@ -89,7 +89,7 @@ public class ClearMap implements CommonMap {
             case ENEMY_RIGHT: return CellType.NONE;
             case ENEMY_PIPE_LEFT: return CellType.PIPE;
             case ENEMY_PIPE_RIGHT:return CellType.PIPE;
-            case ENEMY_PIT: return CellType.BRICK;
+            case ENEMY_PIT: return CellType.UNDESTROYABLE_WALL;
 
         }
         return CellType.NONE;

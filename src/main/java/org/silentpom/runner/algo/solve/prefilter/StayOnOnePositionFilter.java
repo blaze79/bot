@@ -29,7 +29,7 @@ public class StayOnOnePositionFilter implements SinglePrefilter {
         } else {
             if (hero != null) {
                 oldPosition = hero;
-                counter = 0;
+                reset();
             }
         }
         return null;
@@ -44,12 +44,15 @@ public class StayOnOnePositionFilter implements SinglePrefilter {
 
         if (counter >= deadLimit) {
             LOGGER.warn("Trapped in one point too long {}, {}", hero.getRow(), hero.getColumn());
-            counter = 0;
+            reset();
             return new DieCommand();
         }
 
         return null;
     }
 
-
+    @Override
+    public void reset() {
+        counter = 0;
+    }
 }

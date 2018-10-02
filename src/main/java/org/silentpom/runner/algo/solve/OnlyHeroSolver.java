@@ -68,10 +68,9 @@ public class OnlyHeroSolver implements ProblemSolver {
         }
         calls++;
 
-        char[] chars = new char[level];
-        Arrays.fill(chars, '\t');
-        String tabs = new String(chars);
-
+//        char[] chars = new char[level];
+//        Arrays.fill(chars, '\t');
+//        String tabs = new String(chars);
 
         mapAtTime.newTick();
         CommonMap heroView = mapAtTime.getHeroView();
@@ -162,13 +161,31 @@ public class OnlyHeroSolver implements ProblemSolver {
         return newEstimation - lastEstimation;
     }
 
+
+
     boolean checkKilled(Position newPosition, FullMapAtTime mapAtTime, CommonMap heroView) {
+        // dead end
         if (heroView.getCell(newPosition.left()).getCategory() == CellCategory.WALL &&
                 heroView.getCell(newPosition.right()).getCategory() == CellCategory.WALL &&
                 !heroView.getCell(newPosition.down()).isFreeCell()
                 ) {
             return true;
         }
+
+        // last moment hole
+        CellType heroCell = heroView.getCell(newPosition);
+        if(heroCell == CellType.PIT_FILL_4) {
+            return true;
+        }
+
+        // falling down to last moment hole
+        CellType heroCellDown = heroView.getCell(newPosition.down());
+        if (heroCell == CellType.NONE &&
+                (heroCellDown == CellType.PIT_FILL_3 || heroCellDown == CellType.PIT_FILL_4)
+                ) {
+            return true;
+        }
+
 
         List<Hunter> hunters = mapAtTime.getHunters();
         for (int h = 0; h < hunters.size(); ++h) {
@@ -248,16 +265,12 @@ public class OnlyHeroSolver implements ProblemSolver {
         return resTemp[0];
     }
 
-    /*public static GameCommand[] HERO_COMMANDS = {
-            new GameLeftCommand(), new GameUpCommand(), new GameRightCommand(), new GameDownCommand(),
-            new DigLeftCommand(), new DigRightCommand(),
-            new DoNothingCommand()
-    };*/
 
     public static GameCommand[] HERO_COMMANDS = {
             new GameRightCommand(), new GameLeftCommand(), new GameUpCommand(), new GameDownCommand(),
-            new DigLeftCommand(), new DigRightCommand(),
-            new DoNothingCommand()
+            // do nothing should be before dig command. prevents digging when no move allowed
+            new DoNothingCommand(),
+            new DigLeftCommand(), new DigRightCommand()
     };
 
     public static LinearWeightPolicy GAME_POLICY = new LinearWeightPolicy(Constants.REAL_GOLD_COST, RATE_INFLATION);

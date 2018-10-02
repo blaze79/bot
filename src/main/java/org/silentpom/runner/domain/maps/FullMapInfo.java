@@ -72,7 +72,7 @@ public class FullMapInfo {
                 .map(info -> info.getPosition())
                 .collect(Collectors.toList());
 
-        enemy = simple.selectCells(cell -> cell.getCategory() == CellCategory.ENEMY)
+        enemy = simple.selectCells(cell -> cell.getCategory() == CellCategory.ENEMY && !CellType.ENEMY_PIT.equals(cell))
                 .stream()
                 .map(info -> info.getPosition())
                 .collect(Collectors.toList());

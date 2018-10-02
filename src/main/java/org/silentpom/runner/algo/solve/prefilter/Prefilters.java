@@ -20,6 +20,7 @@ public class Prefilters {
         for (SinglePrefilter prefilter : prefilters) {
             GameCommand gameCommand = prefilter.checkStupidSituations(estimator, info);
             if (gameCommand != null) {
+                reset();
                 return gameCommand;
             }
         }
@@ -29,6 +30,12 @@ public class Prefilters {
     public void takeResult(FullMapInfo info, GameCommand command) {
         for (SinglePrefilter prefilter : prefilters) {
             prefilter.takeResult(info, command);
+        }
+    }
+
+    public void reset() {
+        for (SinglePrefilter prefilter : prefilters) {
+            prefilter.reset();
         }
     }
 

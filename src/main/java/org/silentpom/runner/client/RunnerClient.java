@@ -45,7 +45,7 @@ public class RunnerClient {
     MapDecoder mapDecoder = new MapDecoder();
     Estimator estimator = new Estimator();
     //ProblemSolver solver = new GreedySolver();
-    ProblemSolver solver =new OnlyHeroSolver(9);
+    ProblemSolver solver = new OnlyHeroSolver(9);
     Prefilters prefilters = new Prefilters();
     MonsterGoldCorrector goldCorrector = new MonsterGoldCorrector();
 
@@ -72,7 +72,6 @@ public class RunnerClient {
         });
 
         while (true) {
-            //clientEndPoint.sendMessage(getMessage("Hi There!!"));
             Thread.sleep(5000);
         }
     }
@@ -95,9 +94,10 @@ public class RunnerClient {
 
         try {
             if (BEST_SINGLE.getHeroState().getGeneration() > 25) {
+                prefilters.reset();
                 return new DieCommand().getCode();
             }
-        }catch (Exception ex) {
+        } catch (Exception ex) {
 
         }
 

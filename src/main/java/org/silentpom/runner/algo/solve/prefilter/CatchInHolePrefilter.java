@@ -48,5 +48,10 @@ public class CatchInHolePrefilter implements SinglePrefilter {
         return null;
     }
 
+    @Override
+    public void reset() {
+
+    }
+
     private static WeightPolicy LOCAL_POLICY = new LinearWeightPolicy(GOLD_COST, RATE_INFLATION);
 }

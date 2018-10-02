@@ -28,7 +28,7 @@ public class NoMoreGoldFilter implements SinglePrefilter {
         if (count >= LIMIT) {
             Position hero = info.getHero();
             LOGGER.warn("No gold too long {}. Position {} {}", count, hero.getRow(), hero.getColumn());
-            count = 0;
+            reset();
             return new DieCommand();
         }
         return null;
@@ -39,9 +39,14 @@ public class NoMoreGoldFilter implements SinglePrefilter {
         Position newPosition = command.moveOnly(info.getHero());
         if (info.getClearMap().getCell(newPosition) == CellType.GOLD) {
             LOGGER.warn("Take GOLD after {}! at {}, {}", count, newPosition.getRow(), newPosition.getColumn());
-            count = 0;
+            reset();
         } else {
             count++;
         }
+    }
+
+    @Override
+    public void reset() {
+        count = 0;
     }
 }

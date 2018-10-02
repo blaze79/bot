@@ -29,16 +29,21 @@ public class ManiacPrefilter implements SinglePrefilter {
         boolean near = info.getBots().stream().anyMatch(x -> x.absDistance(hero) <= 1);
         if (near) {
             count++;
-            if(count >=LIMIT) {
+            if (count >= LIMIT) {
                 LOGGER.warn("Maniac too long {}, {}, time: ", hero.getRow(), hero.getColumn(), count);
-                count = 0;
+                reset();
                 return new DieCommand();
 
             }
         } else {
-            count = 0;
+            reset();
         }
 
         return null;
+    }
+
+    @Override
+    public void reset() {
+        count = 0;
     }
 }
