@@ -27,17 +27,16 @@ import org.silentpom.runner.replay.Replayer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.InputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.silentpom.runner.algo.estimation.Estimator.BEST_SINGLE;
 
 public class RunnerClient {
-    String code = "14472771371957506935";
-    String name = "vladislav.kogut@luxoft.com";
-
     String url = "ws://loderunner.luxoft.com:8080/codenjoy-contest/ws?user=vladislav.kogut@luxoft.com&code=14472771371957506935";
 
     public static Logger LOGGER = LoggerFactory.getLogger(RunnerClient.class);
@@ -50,6 +49,12 @@ public class RunnerClient {
     MonsterGoldCorrector goldCorrector = new MonsterGoldCorrector();
 
     public void startEndConnect() throws Exception {
+        Properties props = new Properties();
+        try(InputStream stream = this.getClass().getResourceAsStream("/runner.properties")) {
+            props.load(stream);
+        }
+        url = props.getProperty("runner.server.url");
+
         final GameClientEndpoint clientEndPoint = new GameClientEndpoint(new URI(url));
         clientEndPoint.addMessageHandler(new GameClientEndpoint.MessageHandler() {
             public void handleMessage(String message) {
