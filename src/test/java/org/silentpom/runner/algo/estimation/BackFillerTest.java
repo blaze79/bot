@@ -158,9 +158,9 @@ public class BackFillerTest {
 
             Estimator estimator = new Estimator();
             estimator.forceOneMode();
-            estimator.estimate(info);
+            Estimator.Result estimate = estimator.estimate(info);
 
-            List<FillerState> fillerStates = Estimator.BEST_SINGLE.getHeroState().asList();
+            List<FillerState> fillerStates = estimate.bestGold.get().getHeroState().asList();
 
             Replayer replayer = new Replayer();
             replayer.replay(info.getClearMap(), fillerStates);
@@ -181,9 +181,8 @@ public class BackFillerTest {
 
             Estimator estimator = new Estimator();
             estimator.forceOneMode();
-            estimator.estimate(info);
 
-            FillerState heroState = Estimator.BEST_SINGLE.getHeroState();
+            FillerState heroState = estimator.estimate(info).bestGold.get().getHeroState();
             List<FillerState> fillerStates = heroState.asList();
 
             System.out.printf("Found solution steps %d  value %f step %s %n",
@@ -194,7 +193,7 @@ public class BackFillerTest {
 
             info.fakeHero(heroState.getParent().getPosition());
             estimator.estimate(info);
-            heroState = Estimator.BEST_SINGLE.getHeroState();
+            heroState = estimator.estimate(info).bestGold.get().getHeroState();
 
             System.out.printf("Found solution steps %d  value %f step %s %n",
                     heroState.getGeneration(),
@@ -203,8 +202,8 @@ public class BackFillerTest {
             );
 
             info.fakeHero(heroState.getParent().getPosition());
-            estimator.estimate(info);
-            heroState = Estimator.BEST_SINGLE.getHeroState();
+
+            heroState = estimator.estimate(info).bestGold.get().getHeroState();
 
             System.out.printf("Found solution steps %d  value %f step %s %n",
                     heroState.getGeneration(),

@@ -21,8 +21,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Properties;
 
 public class ManiacPrefilter implements SinglePrefilter {
-    int count = 0;
-    int limit = 30;
+    private int count = 0;
+    private int limit = 30;
 
     public static Logger LOGGER = LoggerFactory.getLogger(ManiacPrefilter.class);
 

@@ -17,6 +17,7 @@ import org.silentpom.runner.algo.solve.ProblemSolver;
 import org.silentpom.runner.algo.solve.commands.DieCommand;
 import org.silentpom.runner.algo.solve.commands.DoNothingCommand;
 import org.silentpom.runner.algo.solve.commands.GameCommand;
+import org.silentpom.runner.algo.solve.prefilter.EstimationFilter;
 import org.silentpom.runner.algo.solve.prefilter.Prefilters;
 import org.silentpom.runner.domain.maps.FullMapInfo;
 import org.silentpom.runner.domain.maps.MapDecoder;
@@ -34,8 +35,6 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.silentpom.runner.algo.estimation.Estimator.BEST_SINGLE;
-
 public class RunnerClient {
     String url = "ws://loderunner.luxoft.com:8080/codenjoy-contest/ws?user=vladislav.kogut@luxoft.com&code=14472771371957506935";
 
@@ -46,6 +45,7 @@ public class RunnerClient {
     //ProblemSolver solver = new GreedySolver();
     private ProblemSolver solver = new OnlyHeroSolver(9);
     private Prefilters prefilters = new Prefilters();
+    private EstimationFilter estimationFilter = new EstimationFilter();
     private MonsterGoldCorrector goldCorrector = new MonsterGoldCorrector();
 
     public void startEndConnect() throws Exception {
@@ -55,6 +55,8 @@ public class RunnerClient {
         }
         url = props.getProperty("runner.server.url");
         prefilters.readProperties(props);
+        estimator.readProperties(props);
+        estimationFilter.readProperties(props);
 
         final GameClientEndpoint clientEndPoint = new GameClientEndpoint(new URI(url));
         clientEndPoint.addMessageHandler(new GameClientEndpoint.MessageHandler() {
@@ -91,18 +93,14 @@ public class RunnerClient {
         long time = System.currentTimeMillis();
         // TODO: check it
         estimator.forceOneMode();
-        DoubleMask estimate = estimator.estimate(info);
+        Estimator.Result estimate = estimator.estimate(info);
         long usedTime = time - System.currentTimeMillis();
 
         LOGGER.info("Estimation done for {} ms", usedTime);
 
-        try {
-            if (BEST_SINGLE.getHeroState().getGeneration() > 25) {
-                prefilters.reset();
-                return new DieCommand().getCode();
-            }
-        } catch (Exception ex) {
-
+        if(estimationFilter.shouldBeRespawn(estimate)) {
+            prefilters.reset();
+            return new DieCommand().getCode();
         }
 
         GameCommand preCommand = prefilters.checkStupidSituations(estimator, info);

@@ -30,7 +30,7 @@ public class EstimatorTest {
             FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
 
             Estimator estimator = new Estimator();
-            DoubleMask estimation = estimator.estimate(info);
+            DoubleMask estimation = estimator.estimate(info).getMask();
 
             System.out.println(estimation.getStringView());
 
@@ -50,7 +50,7 @@ public class EstimatorTest {
             FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
 
             Estimator estimator = new Estimator();
-            DoubleMask estimation = estimator.estimate(info);
+            DoubleMask estimation = estimator.estimate(info).getMask();
 
             System.out.println(estimation.getStringView());
 
@@ -63,7 +63,7 @@ public class EstimatorTest {
                     newInfo.fakeHero(pos);
 
                     Estimator newEstimator = new Estimator();
-                    DoubleMask newEstimation = newEstimator.estimate(newInfo);
+                    DoubleMask newEstimation = newEstimator.estimate(newInfo).getMask();
                     if (newEstimator.isOneGoldMode()) {
                         System.out.println("New estimation map looks like");
                         System.out.println(newEstimation.getStringView());
@@ -96,7 +96,7 @@ public class EstimatorTest {
                 System.out.printf("Estimation done for %s ms\n", usedTime);
             }
 
-            DoubleMask estimation = estimator.estimate(info);
+            DoubleMask estimation = estimator.estimate(info).getMask();
             System.out.println(estimation.getStringView());
         }
     }

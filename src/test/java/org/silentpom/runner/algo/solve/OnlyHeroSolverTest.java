@@ -30,7 +30,7 @@ public class OnlyHeroSolverTest {
             FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
 
             Estimator estimator = new Estimator();
-            DoubleMask estimation = estimator.estimate(info);
+            Estimator.Result estimation = estimator.estimate(info);
 
             //System.out.println(estimation.getStringView());
             //Thread.sleep(5000);
@@ -63,7 +63,7 @@ public class OnlyHeroSolverTest {
             FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
 
             Estimator estimator = new Estimator();
-            DoubleMask estimation = estimator.estimate(info);
+            Estimator.Result estimation = estimator.estimate(info);
 
             //System.out.println(estimation.getStringView());
             //Thread.sleep(5000);
@@ -96,7 +96,7 @@ public class OnlyHeroSolverTest {
             FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
 
             Estimator estimator = new Estimator();
-            DoubleMask estimation = estimator.estimate(info);
+            Estimator.Result estimation = estimator.estimate(info);
 
             //System.out.println(estimation.getStringView());
             //Thread.sleep(5000);
@@ -128,7 +128,7 @@ public class OnlyHeroSolverTest {
             FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
 
             Estimator estimator = new Estimator();
-            DoubleMask estimation = estimator.estimate(info);
+            Estimator.Result estimation = estimator.estimate(info);
 
             //System.out.println(estimation.getStringView());
             //Thread.sleep(5000);
@@ -160,7 +160,7 @@ public class OnlyHeroSolverTest {
             FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
 
             Estimator estimator = new Estimator();
-            DoubleMask estimation = estimator.estimate(info);
+            Estimator.Result estimation = estimator.estimate(info);
 
             //System.out.println(estimation.getStringView());
             //Thread.sleep(5000);
@@ -192,7 +192,7 @@ public class OnlyHeroSolverTest {
             FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
 
             Estimator estimator = new Estimator();
-            DoubleMask estimation = estimator.estimate(info);
+            Estimator.Result estimation = estimator.estimate(info);
 
             //System.out.println(estimation.getStringView());
             //Thread.sleep(5000);
@@ -225,7 +225,7 @@ public class OnlyHeroSolverTest {
             FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
 
             Estimator estimator = new Estimator();
-            DoubleMask estimation = estimator.estimate(info);
+            Estimator.Result estimation = estimator.estimate(info);
 
             //System.out.println(estimation.getStringView());
             //Thread.sleep(5000);
@@ -257,7 +257,7 @@ public class OnlyHeroSolverTest {
             FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
 
             Estimator estimator = new Estimator();
-            DoubleMask estimation = estimator.estimate(info);
+            Estimator.Result estimation = estimator.estimate(info);
 
             //System.out.println(estimation.getStringView());
             //Thread.sleep(5000);
@@ -291,7 +291,7 @@ public class OnlyHeroSolverTest {
 
             Estimator estimator = new Estimator();
             estimator.forceOneMode();
-            DoubleMask estimation = estimator.estimate(info);
+            Estimator.Result estimation = estimator.estimate(info);
             //estimation = new DoubleMask(simpleMap.rows(), simpleMap.columns());
 
             //System.out.println(estimation.getStringView());
@@ -334,7 +334,7 @@ public class OnlyHeroSolverTest {
             FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
 
             Estimator estimator = new Estimator();
-            DoubleMask estimation = estimator.estimate(info);
+            Estimator.Result estimation = estimator.estimate(info);
 
             //System.out.println(estimation.getStringView());
             //Thread.sleep(5000);

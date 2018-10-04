@@ -1,5 +1,6 @@
 package org.silentpom.runner.algo.solve;
 
+import org.silentpom.runner.algo.estimation.Estimator;
 import org.silentpom.runner.algo.estimation.policy.LinearWeightPolicy;
 import org.silentpom.runner.algo.solve.commands.*;
 import org.silentpom.runner.domain.CellCategory;
@@ -43,10 +44,10 @@ public class OnlyHeroSolver implements ProblemSolver {
     }
 
     @Override
-    public GameCommand findBestCommand(DoubleMask estimate, FullMapInfo info) {
+    public GameCommand findBestCommand(Estimator.Result estimate, FullMapInfo info) {
         FullMapAtTime map = new FullMapAtTime(info);
         clearRes();
-        return findGameCommandRec(estimate, map, 0);
+        return findGameCommandRec(estimate.getMask(), map, 0);
     }
 
     private void clearRes() {

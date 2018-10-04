@@ -22,4 +22,6 @@ public class DoNothingCommand implements GameCommand {
     public boolean moveInGame(CommonMap map, CommandResult result, boolean canKill) {
         return true;
     }
+
+    public static DoNothingCommand DO_NOTHING = new DoNothingCommand();
 }
