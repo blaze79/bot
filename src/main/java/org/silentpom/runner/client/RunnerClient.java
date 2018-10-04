@@ -41,29 +41,29 @@ public class RunnerClient {
 
     public static Logger LOGGER = LoggerFactory.getLogger(RunnerClient.class);
 
-    MapDecoder mapDecoder = new MapDecoder();
-    Estimator estimator = new Estimator();
+    private MapDecoder mapDecoder = new MapDecoder();
+    private Estimator estimator = new Estimator();
     //ProblemSolver solver = new GreedySolver();
-    ProblemSolver solver = new OnlyHeroSolver(9);
-    Prefilters prefilters = new Prefilters();
-    MonsterGoldCorrector goldCorrector = new MonsterGoldCorrector();
+    private ProblemSolver solver = new OnlyHeroSolver(9);
+    private Prefilters prefilters = new Prefilters();
+    private MonsterGoldCorrector goldCorrector = new MonsterGoldCorrector();
 
     public void startEndConnect() throws Exception {
         Properties props = new Properties();
-        try(InputStream stream = this.getClass().getResourceAsStream("/runner.properties")) {
+        try (InputStream stream = this.getClass().getResourceAsStream("/runner.properties")) {
             props.load(stream);
         }
         url = props.getProperty("runner.server.url");
+        prefilters.readProperties(props);
 
         final GameClientEndpoint clientEndPoint = new GameClientEndpoint(new URI(url));
         clientEndPoint.addMessageHandler(new GameClientEndpoint.MessageHandler() {
+
             public void handleMessage(String message) {
                 String command = "WAIT";
                 try {
                     FullMapInfo info = mapDecoder.mapDecode(message);
-
                     command = processStep(info);
-                    //command = "ACT LEFT";
                 } catch (Exception ex) {
                     LOGGER.error("Exception ", ex);
                 }
@@ -72,7 +72,6 @@ public class RunnerClient {
                 clientEndPoint.sendMessage(
                         command
                 );
-
             }
         });
 
@@ -105,7 +104,6 @@ public class RunnerClient {
         } catch (Exception ex) {
 
         }
-
 
         GameCommand preCommand = prefilters.checkStupidSituations(estimator, info);
         if (preCommand != null) {

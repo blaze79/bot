@@ -14,12 +14,15 @@ import org.silentpom.runner.algo.solve.commands.DieCommand;
 import org.silentpom.runner.algo.solve.commands.GameCommand;
 import org.silentpom.runner.domain.Position;
 import org.silentpom.runner.domain.maps.FullMapInfo;
+import org.silentpom.runner.utils.PropertiesUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Properties;
+
 public class ManiacPrefilter implements SinglePrefilter {
     int count = 0;
-    int LIMIT = 30;
+    int limit = 30;
 
     public static Logger LOGGER = LoggerFactory.getLogger(ManiacPrefilter.class);
 
@@ -29,7 +32,7 @@ public class ManiacPrefilter implements SinglePrefilter {
         boolean near = info.getBots().stream().anyMatch(x -> x.absDistance(hero) <= 1);
         if (near) {
             count++;
-            if (count >= LIMIT) {
+            if (count >= limit) {
                 LOGGER.warn("Maniac too long {}, {}, time: ", hero.getRow(), hero.getColumn(), count);
                 reset();
                 return new DieCommand();
@@ -45,5 +48,10 @@ public class ManiacPrefilter implements SinglePrefilter {
     @Override
     public void reset() {
         count = 0;
+    }
+
+    @Override
+    public void readProperties(Properties properties) {
+        limit = PropertiesUtil.getValue(properties, "filter.maniac.limit", limit);
     }
 }

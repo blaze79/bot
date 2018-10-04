@@ -15,17 +15,20 @@ import org.silentpom.runner.algo.solve.commands.GameCommand;
 import org.silentpom.runner.domain.CellType;
 import org.silentpom.runner.domain.Position;
 import org.silentpom.runner.domain.maps.FullMapInfo;
+import org.silentpom.runner.utils.PropertiesUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Properties;
+
 public class NoMoreGoldFilter implements SinglePrefilter {
     int count = 0;
-    int LIMIT = 40;
+    int limit = 40;
     public static Logger LOGGER = LoggerFactory.getLogger(NoMoreGoldFilter.class);
 
     @Override
     public GameCommand checkStupidSituations(Estimator estimator, FullMapInfo info) {
-        if (count >= LIMIT) {
+        if (count >= limit) {
             Position hero = info.getHero();
             LOGGER.warn("No gold too long {}. Position {} {}", count, hero.getRow(), hero.getColumn());
             reset();
@@ -48,5 +51,10 @@ public class NoMoreGoldFilter implements SinglePrefilter {
     @Override
     public void reset() {
         count = 0;
+    }
+
+    @Override
+    public void readProperties(Properties properties) {
+        limit = PropertiesUtil.getValue(properties, "filter.nogold.limit", limit);
     }
 }

@@ -5,6 +5,8 @@ import org.silentpom.runner.algo.solve.commands.GameCommand;
 import org.silentpom.runner.domain.maps.FullMapInfo;
 import org.silentpom.runner.domain.masks.DoubleMask;
 
+import java.util.Properties;
+
 /**
  * Created by Vlad on 17.09.2018.
  */
@@ -39,4 +41,9 @@ public class Prefilters {
         }
     }
 
+    public void readProperties(Properties properties) {
+        for (SinglePrefilter prefilter : prefilters) {
+            prefilter.readProperties(properties);
+        }
+    }
 }
