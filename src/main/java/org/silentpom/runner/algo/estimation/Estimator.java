@@ -88,7 +88,7 @@ public class Estimator {
 
                 LOGGER.info("Player in local maximum and gold distance is  {}", pathLen);
                 checkOneGoldMode();
-                BEST_SINGLE = minHolder;
+               // BEST_SINGLE = minHolder;
                 return minHolder.getResult();
 
                 /*if (pathLen > depth) {
@@ -249,8 +249,6 @@ public class Estimator {
     }
 
     private static WeightPolicy POLICY = new LinearWeightPolicy(GOLD_COST, RATE_INFLATION);
-
-    private static  FillerResultHolder BEST_SINGLE = null;
 
     public static class Result {
         DoubleMask mask;

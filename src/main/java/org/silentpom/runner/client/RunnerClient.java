@@ -92,7 +92,7 @@ public class RunnerClient {
 
         long time = System.currentTimeMillis();
         // TODO: check it
-        estimator.forceOneMode();
+        //estimator.forceOneMode();
         Estimator.Result estimate = estimator.estimate(info);
         long usedTime = time - System.currentTimeMillis();
 
