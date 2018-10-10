@@ -15,7 +15,8 @@ public class Prefilters {
             new ManiacPrefilter(),
             new StayOnOnePositionFilter(),
             new CatchInHolePrefilter(),
-            new NoMoreGoldFilter()
+            new NoMoreGoldFilter(),
+            new PushOutFormLocalMaxFilter()
     };
 
     public GameCommand checkStupidSituations(Estimator estimator, FullMapInfo info) {
