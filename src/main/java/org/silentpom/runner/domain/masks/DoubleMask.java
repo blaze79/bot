@@ -63,6 +63,14 @@ public class DoubleMask {
         }
     }
 
+    public void mul(double weight) {
+        for (int i = 0; i < rows; ++i) {
+            for (int j = 0; j < columns; ++j) {
+                values[i][j] = values[i][j] * weight;
+            }
+        }
+    }
+
     public void print() {
         System.out.println();
         for (int i = 0; i < rows; ++i) {

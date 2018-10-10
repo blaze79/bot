@@ -88,7 +88,7 @@ public class Estimator {
 
                 LOGGER.info("Player in local maximum and gold distance is  {}", pathLen);
                 checkOneGoldMode();
-               // BEST_SINGLE = minHolder;
+                // BEST_SINGLE = minHolder;
                 return minHolder.getResult();
 
                 /*if (pathLen > depth) {
@@ -128,11 +128,12 @@ public class Estimator {
             DoubleMask estimation = botHolder.getResult();
 
             if (botHolder.isHeroFound()) {
-                mask.addWithWeight(
-                        estimation,
-                        reductionWeight(botHolder.getBotsFound())
-                );
+                estimation.mul(reductionWeight(botHolder.getBotsFound()));
+                mask.addWithWeight(estimation, 1);
+
                 goldenWays.add(botHolder);
+
+                fullEstimation.pushGold(gold, estimation);
             }
         }
 
@@ -149,20 +150,24 @@ public class Estimator {
             int pathLen = minHolder.getHeroState().getGeneration();
             fullEstimation.bestGold(minHolder);
 
-            if (decreaseOneGoldMode() || checkLocalMaximum(position, mask, position.getHero())) {
-                checkOneGoldMode();
-                fullEstimation.setMask(minHolder.getResult());
+            if (decreaseOneGoldMode()) {
+
+                fullEstimation.pushGoldSingle(minHolder.getStartPosition(), minHolder.getResult());
 
                 LOGGER.info("Player in local maximum/closest mode and gold distance is {}", pathLen);
-
             } else {
-                LOGGER.info("Player in multigold mode and gold distance is {}", pathLen);
+                if (checkLocalMaximum(position, mask, position.getHero())) {
+                    fullEstimation.setHeroInMax(true);
+                    LOGGER.info("Player in MAX point and gold distance is {}", pathLen);
+                } else {
+                    LOGGER.info("Player in multigold mode and gold distance is {}", pathLen);
+                }
             }
         } else {
             LOGGER.info("No gold found in window {}", window);
         }
 
-        return fullEstimation;
+        return fullEstimation.shrinkGoldToList(position.getHero());
     }
 
 
@@ -179,7 +184,6 @@ public class Estimator {
         double maxValue = mask.findMaximumOfArea(area);
 
         return mask.getChecked(pos) >= maxValue;
-        //mask.checkLocalMaximum(position.getHero())
     }
 
     private boolean decreaseOneGoldMode() {
@@ -236,6 +240,9 @@ public class Estimator {
     }
 
     public void forceOneMode() {
+        if (goldmodeCounter == 0) {
+            LOGGER.info("Estimator switched to ONE mode");
+        }
         goldmodeCounter = goldmodeCounterForced;
     }
 
@@ -253,6 +260,9 @@ public class Estimator {
     public static class Result {
         DoubleMask mask;
         Optional<FillerResultHolder> bestGold = Optional.empty();
+        Map<Position, DoubleMask> goldMap = new HashMap<>();
+        List<GoldEstimation> goldList = new ArrayList<>();
+        boolean heroInMax = false;
 
         public DoubleMask getMask() {
             return mask;
@@ -271,15 +281,66 @@ public class Estimator {
         }
 
         public GameCommand bestCommand() {
-            return bestGold.map( way -> way.getHeroState())
-                    .map( state -> state.getCommand().toGameCommand())
+            return bestGold.map(way -> way.getHeroState())
+                    .map(state -> state.getCommand().toGameCommand())
                     .orElse(DoNothingCommand.DO_NOTHING);
         }
 
         public Integer bestGoldDistance() {
-            return bestGold.map( way -> way.getHeroState())
+            return bestGold.map(way -> way.getHeroState())
                     .map(state -> state.getGeneration())
                     .orElse(null);
+        }
+
+        private void pushGold(Position gold, DoubleMask goldValue) {
+            goldMap.put(gold, goldValue);
+        }
+
+        private void pushGoldSingle(Position gold, DoubleMask goldValue) {
+            goldMap.clear();
+            goldMap.put(gold, goldValue);
+            this.mask = goldValue;
+        }
+
+        public double getValueAt(Position pos, GoldHider hider) {
+            double val = mask.getChecked(pos);
+            for (int i = 0; i < goldList.size(); ++i) {
+                if (hider.isGoldHided(goldList.get(i).gold)) {
+                    val -= goldList.get(i).mask.getChecked(pos);
+                }
+            }
+
+            return val;
+        }
+
+        private Result shrinkGoldToList(Position hero) {
+            goldList = goldMap.entrySet().stream()
+                    .map(entry -> new GoldEstimation(entry.getKey(), entry.getValue()))
+                    .filter(x -> x.gold.absDistance(hero) <= 11)
+                    .collect(Collectors.toList());
+            return this;
+        }
+
+        public boolean isHeroInMax() {
+            return heroInMax;
+        }
+
+        private void setHeroInMax(boolean heroInMax) {
+            this.heroInMax = heroInMax;
+        }
+    }
+
+    public interface GoldHider {
+        boolean isGoldHided(Position pos);
+    }
+
+    static class GoldEstimation {
+        Position gold;
+        DoubleMask mask;
+
+        public GoldEstimation(Position gold, DoubleMask mask) {
+            this.gold = gold;
+            this.mask = mask;
         }
     }
 }

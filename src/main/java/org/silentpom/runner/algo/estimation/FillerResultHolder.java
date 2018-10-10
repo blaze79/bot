@@ -22,6 +22,7 @@ public class FillerResultHolder {
     int botsFound = 0;
     boolean heroFound = false;
     FillerState heroState = null;
+    Position startPosition;
 
     public FillerResultHolder(List<Position> bots, Position hero, BitMask mask, DoubleMask result) {
         botSet.addAll(bots);
@@ -45,6 +46,14 @@ public class FillerResultHolder {
             }
 
         }
+    }
+
+    public Position getStartPosition() {
+        return startPosition;
+    }
+
+    public void setStartPosition(Position startPosition) {
+        this.startPosition = startPosition;
     }
 
     public int getBotsFound() {

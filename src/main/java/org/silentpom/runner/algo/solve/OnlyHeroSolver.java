@@ -11,11 +11,9 @@ import org.silentpom.runner.domain.actors.Hero;
 import org.silentpom.runner.domain.actors.Hunter;
 import org.silentpom.runner.domain.maps.CommonMap;
 import org.silentpom.runner.domain.maps.FullMapInfo;
-import org.silentpom.runner.domain.masks.DoubleMask;
 import org.silentpom.runner.domain.state.FullMapAtTime;
 import org.silentpom.runner.domain.state.PositionsCache;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.silentpom.runner.domain.Constants.RATE_INFLATION;
@@ -30,6 +28,8 @@ public class OnlyHeroSolver implements ProblemSolver {
     double[] resTemp;
     int calls = 0;
     boolean[] wasGold;
+    Estimator.GoldHider goldHiderNew;
+    Estimator.GoldHider goldHiderLast;
 
     public OnlyHeroSolver(int depth) {
         maxDepth = depth;
@@ -46,8 +46,24 @@ public class OnlyHeroSolver implements ProblemSolver {
     @Override
     public GameCommand findBestCommand(Estimator.Result estimate, FullMapInfo info) {
         FullMapAtTime map = new FullMapAtTime(info);
+        Hero hero = map.getHero();
+
+        goldHiderNew = new Estimator.GoldHider() {
+            @Override
+            public boolean isGoldHided(Position pos) {
+                return hero.wasInPosition(pos);
+            }
+        };
+
+        goldHiderLast= new Estimator.GoldHider() {
+            @Override
+            public boolean isGoldHided(Position pos) {
+                return hero.wasInPositionNotLast(pos);
+            }
+        };
+
         clearRes();
-        return findGameCommandRec(estimate.getMask(), map, 0);
+        return findGameCommandRec(estimate, map, 0);
     }
 
     private void clearRes() {
@@ -60,7 +76,7 @@ public class OnlyHeroSolver implements ProblemSolver {
         }
     }
 
-    private GameCommand findGameCommandRec(DoubleMask estimate, FullMapAtTime mapAtTime, int level) {
+    private GameCommand findGameCommandRec(Estimator.Result estimate, FullMapAtTime mapAtTime, int level) {
         Hero hero = mapAtTime.getHero();
         if (level == maxDepth) {
             //resTemp[level] = estimate.getChecked(hero.position(level));
@@ -76,7 +92,8 @@ public class OnlyHeroSolver implements ProblemSolver {
         mapAtTime.newTick();
         CommonMap heroView = mapAtTime.getHeroView();
         GameCommand lastCommand = hero.getLastCommand();
-        double lastEstimation = estimate.getChecked(hero.position(level));
+        // last position can be empty. no matters new or old hider to use
+        double lastEstimation = estimateCellPoint(estimate, hero.position(level), goldHiderLast);
 
         try {
             if (lastCommand == null) {
@@ -100,8 +117,9 @@ public class OnlyHeroSolver implements ProblemSolver {
                             continue;
                         }
                         double currentValue = estimatePosition(level, newPosition, mapAtTime, heroView, oldCellType, tempResult.getHole());
-                        double newEstimation = estimate.getChecked(newPosition);
-                        currentValue += estimateField(level, lastEstimation, newEstimation);
+                        // last position should not hide gold!
+                        double newEstimation = estimateCellPoint(estimate, newPosition, goldHiderLast);
+                        currentValue += estimateStepDelta(level, lastEstimation, newEstimation);
 
 //                        System.out.printf("%s (%d) Command %s local weight %f. Position: %d %d %n", tabs, level, command.getCode(), currentValue,
 //                                newPosition.getRow(), newPosition.getColumn()
@@ -136,8 +154,8 @@ public class OnlyHeroSolver implements ProblemSolver {
                     return DEAD_COMMAND;
                 }
                 double currentValue = estimatePosition(level, newPosition, mapAtTime, heroView, oldCellType, tempResult.getHole());
-                double newEstimation = estimate.getChecked(newPosition);
-                currentValue += estimateField(level, lastEstimation, newEstimation);
+                double newEstimation = estimateCellPoint(estimate, newPosition, goldHiderLast);
+                currentValue += estimateStepDelta(level, lastEstimation, newEstimation);
 
 //                System.out.printf("%s (%d) Command NO CHANCE %s local weight %f %n", tabs, level, lastCommand.getCode(), currentValue);
 
@@ -152,14 +170,20 @@ public class OnlyHeroSolver implements ProblemSolver {
         }
     }
 
-    double estimateField(int level, double lastEstimation, double newEstimation) {
-        for(int i=0; i<=level; ++i) {
-            if(wasGold[i]) {
-                return 0;
-            }
-        }
+    double estimateStepDelta(int level, double lastEstimation, double newEstimation) {
+//         no  need for gold checking
+//        for(int i=0; i<=level; ++i) {
+//            if(wasGold[i]) {
+//                return 0;
+//            }
+//        }
 
         return newEstimation - lastEstimation;
+    }
+
+    double estimateCellPoint(Estimator.Result estimation, Position pos, Estimator.GoldHider goldHider) {
+        //return estimation.getMask().getChecked(pos);
+        return estimation.getValueAt(pos, goldHider);
     }
 
 
@@ -254,7 +278,7 @@ public class OnlyHeroSolver implements ProblemSolver {
         return value;
     }
 
-    private GameCommand tryNextLevel(DoubleMask estimate, FullMapAtTime mapAtTime, CommonMap heroView, int level) {
+    private GameCommand tryNextLevel(Estimator.Result estimate, FullMapAtTime mapAtTime, CommonMap heroView, int level) {
         return findGameCommandRec(estimate, mapAtTime, level + 1);
     }
 

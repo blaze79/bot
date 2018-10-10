@@ -312,6 +312,160 @@ public class OnlyHeroSolverTest {
         }
     }
 
+    @Test
+    public void testHold1() throws Exception {
+        try (
+                InputStream in = this.getClass().getClassLoader()
+                        .getResourceAsStream("hold1.txt");
+                InputStreamReader reader = new InputStreamReader(in, UTF_8)) {
+            SimpleMap simpleMap = SimpleMap.fromFile(reader);
+            simpleMap.print();
+
+            FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
+
+            Estimator estimator = new Estimator();
+            estimator.forceOneMode();
+            Estimator.Result estimation = estimator.estimate(info);
+
+            System.out.printf("Best Gold: %d %d %n",
+                    estimation.getBestGold().get().getStartPosition().getRow(),
+                    estimation.getBestGold().get().getStartPosition().getColumn()
+            );
+
+            OnlyHeroSolver heroSolver = new OnlyHeroSolver(9);
+            long time = System.currentTimeMillis();
+            GameCommand bestCommand = heroSolver.findBestCommand(estimation, info);
+            time = System.currentTimeMillis() - time;
+            System.out.printf("Command: %s, value: %f, calls: %d, time: %d ms %n",
+                    bestCommand.getCode(),
+                    heroSolver.getValue(),
+                    heroSolver.getCalls(),
+                    time
+            );
+
+// old incorrect
+//            Best Gold: 43 15
+//            Command: DOWN, value: 48,718421, calls: 123688, time: 1063 ms
+
+// new correct
+//            Best Gold: 43 15
+//            Command: LEFT, value: 76,877313, calls: 123688, time: 683 ms
+
+        }
+    }
+
+    @Test
+    public void testHold2() throws Exception {
+        try (
+                InputStream in = this.getClass().getClassLoader()
+                        .getResourceAsStream("hold2.txt");
+                InputStreamReader reader = new InputStreamReader(in, UTF_8)) {
+            SimpleMap simpleMap = SimpleMap.fromFile(reader);
+            simpleMap.print();
+
+            FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
+
+            Estimator estimator = new Estimator();
+            estimator.forceOneMode();
+            Estimator.Result estimation = estimator.estimate(info);
+
+            System.out.printf("Best Gold: %d %d %n",
+                    estimation.getBestGold().get().getStartPosition().getRow(),
+                    estimation.getBestGold().get().getStartPosition().getColumn()
+            );
+
+            OnlyHeroSolver heroSolver = new OnlyHeroSolver(9);
+            long time = System.currentTimeMillis();
+            GameCommand bestCommand = heroSolver.findBestCommand(estimation, info);
+            time = System.currentTimeMillis() - time;
+            System.out.printf("Command: %s, value: %f, calls: %d, time: %d ms %n",
+                    bestCommand.getCode(),
+                    heroSolver.getValue(),
+                    heroSolver.getCalls(),
+                    time
+            );
+
+// old incorrect result
+//            Best Gold: 45 21
+//            Command: UP, value: 50,857546, calls: 145448, time: 551 ms
+
+// new correct
+//            Best Gold: 45 21
+//            Command: RIGHT, value: 71,876192, calls: 145448, time: 584 ms
+
+        }
+    }
+
+    @Test
+    public void testHold1Matrix() throws Exception {
+        try (
+                InputStream in = this.getClass().getClassLoader()
+                        .getResourceAsStream("hold1.txt");
+                InputStreamReader reader = new InputStreamReader(in, UTF_8)) {
+            SimpleMap simpleMap = SimpleMap.fromFile(reader);
+            simpleMap.print();
+
+            FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
+
+            Estimator estimator = new Estimator();
+            //estimator.forceOneMode();
+            Estimator.Result estimation = estimator.estimate(info);
+
+            System.out.printf("Best Gold: %d %d %n",
+                    estimation.getBestGold().get().getStartPosition().getRow(),
+                    estimation.getBestGold().get().getStartPosition().getColumn()
+            );
+
+            OnlyHeroSolver heroSolver = new OnlyHeroSolver(9);
+            long time = System.currentTimeMillis();
+            GameCommand bestCommand = heroSolver.findBestCommand(estimation, info);
+            time = System.currentTimeMillis() - time;
+            System.out.printf("Command: %s, value: %f, calls: %d, time: %d ms %n",
+                    bestCommand.getCode(),
+                    heroSolver.getValue(),
+                    heroSolver.getCalls(),
+                    time
+            );
+        }
+
+//        Best Gold: 43 15
+//        Command: DOWN, value: 4,031732, calls: 123688, time: 927 ms
+    }
+
+    @Test
+    public void testHold2Matrix() throws Exception {
+        try (
+                InputStream in = this.getClass().getClassLoader()
+                        .getResourceAsStream("hold2.txt");
+                InputStreamReader reader = new InputStreamReader(in, UTF_8)) {
+            SimpleMap simpleMap = SimpleMap.fromFile(reader);
+            simpleMap.print();
+
+            FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
+
+            Estimator estimator = new Estimator();
+            //estimator.forceOneMode();
+            Estimator.Result estimation = estimator.estimate(info);
+
+            System.out.printf("Best Gold: %d %d %n",
+                    estimation.getBestGold().get().getStartPosition().getRow(),
+                    estimation.getBestGold().get().getStartPosition().getColumn()
+            );
+
+            OnlyHeroSolver heroSolver = new OnlyHeroSolver(8);
+            long time = System.currentTimeMillis();
+            GameCommand bestCommand = heroSolver.findBestCommand(estimation, info);
+            time = System.currentTimeMillis() - time;
+            System.out.printf("Command: %s, value: %f, calls: %d, time: %d ms %n",
+                    bestCommand.getCode(),
+                    heroSolver.getValue(),
+                    heroSolver.getCalls(),
+                    time
+            );
+        }
+
+    }
+
 
 
 

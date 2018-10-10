@@ -11,6 +11,7 @@ package org.silentpom.runner.algo.solve.prefilter;
 
 import org.silentpom.runner.algo.estimation.Estimator;
 import org.silentpom.runner.algo.solve.commands.DieCommand;
+import org.silentpom.runner.algo.solve.commands.DoNothingCommand;
 import org.silentpom.runner.algo.solve.commands.GameCommand;
 import org.silentpom.runner.domain.CellType;
 import org.silentpom.runner.domain.Position;
@@ -21,40 +22,31 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Properties;
 
-public class NoMoreGoldFilter implements SinglePrefilter {
-    int count = 0;
-    int limit = 40;
-    public static Logger LOGGER = LoggerFactory.getLogger(NoMoreGoldFilter.class);
+public class PushOutFormLocalMaxFilter implements SinglePrefilter {
+
+    public static Logger LOGGER = LoggerFactory.getLogger(PushOutFormLocalMaxFilter.class);
 
     @Override
     public GameCommand checkStupidSituations(Estimator estimator, FullMapInfo info) {
-        if (count >= limit) {
-            Position hero = info.getHero();
-            LOGGER.warn("No gold too long {}. Position {} {}", count, hero.getRow(), hero.getColumn());
-            reset();
-            return new DieCommand();
-        }
         return null;
     }
 
     @Override
     public void takeResult(FullMapInfo info, GameCommand command, Estimator estimator, Estimator.Result result) {
-        Position newPosition = command.moveOnly(info.getHero());
-        if (info.getClearMap().getCell(newPosition) == CellType.GOLD) {
-            LOGGER.warn("Take GOLD after {}! at {}, {}", count, newPosition.getRow(), newPosition.getColumn());
-            reset();
-        } else {
-            count++;
+        if(result.isHeroInMax()) {
+            if(command instanceof DoNothingCommand) {
+                estimator.forceOneMode();
+                LOGGER.info("Hero wait in local maximum. Force single mode");
+            }
         }
     }
 
     @Override
     public void reset() {
-        count = 0;
     }
 
     @Override
     public void readProperties(Properties properties) {
-        limit = PropertiesUtil.getValue(properties, "filter.nogold.limit", limit);
+
     }
 }

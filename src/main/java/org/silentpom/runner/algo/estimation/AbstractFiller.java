@@ -54,6 +54,7 @@ public abstract class AbstractFiller {
     public FillerResultHolder estimation(Position start, int limit) {
         currentBorder.clear();
         newGeneration.clear();
+        holder.setStartPosition(start);
 
         FillerState init = new FillerState(start, policy.startWeight(start));
         mark(init);

@@ -29,9 +29,13 @@ public class Prefilters {
         return null;
     }
 
-    public void takeResult(FullMapInfo info, GameCommand command) {
+    public void takeResult(FullMapInfo info, GameCommand command, Estimator estimator, Estimator.Result result) {
         for (SinglePrefilter prefilter : prefilters) {
-            prefilter.takeResult(info, command);
+            prefilter.takeResult(info, command, estimator, result);
+        }
+
+        if(command.isDead()) {
+            reset();
         }
     }
 

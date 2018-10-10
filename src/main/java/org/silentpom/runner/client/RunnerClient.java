@@ -35,6 +35,8 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.silentpom.runner.algo.solve.commands.DoNothingCommand.DO_NOTHING;
+
 public class RunnerClient {
     String url = "ws://loderunner.luxoft.com:8080/codenjoy-contest/ws?user=vladislav.kogut@luxoft.com&code=14472771371957506935";
 
@@ -114,11 +116,11 @@ public class RunnerClient {
         LOGGER.info("Solve done for {} ms", usedTime);
 
         if (bestCommand != null) {
-            prefilters.takeResult(info, bestCommand);
+            prefilters.takeResult(info, bestCommand, estimator, estimate);
             return bestCommand.getCode();
         }
 
-        prefilters.takeResult(info, new DoNothingCommand());
-        return "WAIT";
+        prefilters.takeResult(info, DO_NOTHING, estimator, estimate);
+        return DO_NOTHING.getCode();
     }
 }

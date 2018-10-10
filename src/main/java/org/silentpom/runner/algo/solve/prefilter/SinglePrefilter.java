@@ -15,7 +15,7 @@ public interface SinglePrefilter {
 
     void reset();
 
-    default void takeResult(FullMapInfo info, GameCommand command) {
+    default void takeResult(FullMapInfo info, GameCommand command, Estimator estimator, Estimator.Result result) {
 
     };
 

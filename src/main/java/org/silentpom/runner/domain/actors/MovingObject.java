@@ -47,6 +47,21 @@ public abstract class MovingObject extends CellObject {
         return false;
     }
 
+    public boolean wasInPositionNotLast(Position pos) {
+        if (this.startPosition().equals(pos)) {
+            return true;
+        }
+
+        for (int i = 0; i < history.size() - 1; ++i) {
+            Position objectPosition = history.get(i);
+            if (pos.equals(objectPosition)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public void changeHole(Position position) {
         actorHoles.changeLastHole(position);
     }
