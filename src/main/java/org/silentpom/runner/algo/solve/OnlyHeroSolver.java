@@ -1,6 +1,7 @@
 package org.silentpom.runner.algo.solve;
 
 import org.silentpom.runner.algo.estimation.DirectFiller;
+import org.silentpom.runner.algo.estimation.DirectHunterFiller;
 import org.silentpom.runner.algo.estimation.Estimator;
 import org.silentpom.runner.algo.estimation.FillerResultHolder;
 import org.silentpom.runner.algo.estimation.policy.LinearWeightPolicy;
@@ -86,7 +87,7 @@ public class OnlyHeroSolver implements ProblemSolver {
         List<DoubleMask> fields = new ArrayList<>();
         for (Hunter hunter : hunters) {
             Position hunterPosition = hunter.position(0);
-            DirectFiller filler = new DirectFiller(
+            DirectHunterFiller filler = new DirectHunterFiller(
                     clearMap,
                     hunterPolicy,
                     Collections.emptyList(),
