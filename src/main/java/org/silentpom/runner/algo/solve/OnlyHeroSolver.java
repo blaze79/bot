@@ -1,7 +1,10 @@
 package org.silentpom.runner.algo.solve;
 
+import org.silentpom.runner.algo.estimation.DirectFiller;
 import org.silentpom.runner.algo.estimation.Estimator;
+import org.silentpom.runner.algo.estimation.FillerResultHolder;
 import org.silentpom.runner.algo.estimation.policy.LinearWeightPolicy;
+import org.silentpom.runner.algo.estimation.policy.TrueLinearPolicy;
 import org.silentpom.runner.algo.solve.commands.*;
 import org.silentpom.runner.domain.CellCategory;
 import org.silentpom.runner.domain.CellType;
@@ -9,12 +12,17 @@ import org.silentpom.runner.domain.Constants;
 import org.silentpom.runner.domain.Position;
 import org.silentpom.runner.domain.actors.Hero;
 import org.silentpom.runner.domain.actors.Hunter;
+import org.silentpom.runner.domain.maps.ClearMap;
 import org.silentpom.runner.domain.maps.CommonMap;
 import org.silentpom.runner.domain.maps.FullMapInfo;
+import org.silentpom.runner.domain.masks.DoubleMask;
 import org.silentpom.runner.domain.state.FullMapAtTime;
 import org.silentpom.runner.domain.state.PositionsCache;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.silentpom.runner.domain.Constants.RATE_INFLATION;
 
@@ -30,6 +38,13 @@ public class OnlyHeroSolver implements ProblemSolver {
     boolean[] wasGold;
     Estimator.GoldHider goldHiderNew;
     Estimator.GoldHider goldHiderLast;
+
+    List<DoubleMask> hunterValues = new ArrayList<>();
+    int hunterSteps = 3;
+    TrueLinearPolicy hunterPolicy = new TrueLinearPolicy(-Constants.NEAR_HUNTER, hunterSteps);
+
+    // one o zero steps from hunter to hero. 300 or 400 points of field
+    double deadlyHunterValue = -Constants.NEAR_HUNTER * hunterSteps / (hunterSteps + 1) - 1e6;
 
     public OnlyHeroSolver(int depth) {
         maxDepth = depth;
@@ -63,8 +78,35 @@ public class OnlyHeroSolver implements ProblemSolver {
         };
 
         clearRes();
+        hunterValues = buildHunterValue(map.getHunters(), map.getClearMap());
         return findGameCommandRec(estimate, map, 0);
     }
+
+    public List<DoubleMask> buildHunterValue(List<Hunter> hunters, ClearMap clearMap) {
+        List<DoubleMask> fields = new ArrayList<>();
+        for (Hunter hunter : hunters) {
+            Position hunterPosition = hunter.position(0);
+            DirectFiller filler = new DirectFiller(
+                    clearMap,
+                    hunterPolicy,
+                    Collections.emptyList(),
+                    hunterPosition
+            );
+
+            FillerResultHolder estimation = filler.estimation(hunterPosition, hunterSteps);
+            DoubleMask hunterField = estimation.getResult();
+
+            Position stayOnHead = hunterPosition.up();
+            CellType upCell = clearMap.getCell(stayOnHead);
+            // && hunterField.getChecked(stayOnHead) < 1e-6
+            if (upCell.getCategory() != CellCategory.STAIRS) {
+                hunterField.setValue(stayOnHead, -Constants.NEAR_HUNTER);
+            }
+            fields.add(hunterField);
+        }
+
+        return fields;
+    } //
 
     private void clearRes() {
         for (int i = 0; i < resTemp.length; ++i) {
@@ -216,19 +258,23 @@ public class OnlyHeroSolver implements ProblemSolver {
         for (int h = 0; h < hunters.size(); ++h) {
             Hunter hunter = hunters.get(h);
             Position hunterPosition = hunter.position(0);
-            if (newPosition.absDistance(hunterPosition) == 1) {
-                if (hunterPosition.getRow() == newPosition.getRow()) {
-                    if (heroView.getCell(hunterPosition.down()).canStayOn() ||
-                            mapAtTime.getClearMap().getCell(hunterPosition).getCategory() == CellCategory.STAIRS) {
-                        return true;
-                    }
-                } else {
-                    if (hunterPosition.getRow() < newPosition.getRow()) {
-                        return true;
-                    } else if (mapAtTime.getClearMap().getCell(hunterPosition) == CellType.LADDER) {
-                        return true;
-                    }
+            if (newPosition.absDistance(hunterPosition) <= 1) {
+                if(hunterValues.get(0).getChecked(newPosition) >= deadlyHunterValue) {
+                    return true;
                 }
+
+//                if (hunterPosition.getRow() == newPosition.getRow()) {
+//                    if (heroView.getCell(hunterPosition.down()).canStayOn() ||
+//                            mapAtTime.getClearMap().getCell(hunterPosition).getCategory() == CellCategory.STAIRS) {
+//                        return true;
+//                    }
+//                } else {
+//                    if (hunterPosition.getRow() < newPosition.getRow()) {
+//                        return true;
+//                    } else if (mapAtTime.getClearMap().getCell(hunterPosition) == CellType.LADDER) {
+//                        return true;
+//                    }
+//                }
             }
         }
         return false;
@@ -243,6 +289,8 @@ public class OnlyHeroSolver implements ProblemSolver {
         List<Hunter> hunters = mapAtTime.getHunters();
         for (int h = 0; h < hunters.size(); ++h) {
             Hunter hunter = hunters.get(h);
+            DoubleMask hunterValueField = hunterValues.get(h);
+
             Position hunterPosition = hunter.position(level);
             if (heroView.getCell(hunterPosition.down()).getCategory() == CellCategory.HOLE) {
                 continue;
@@ -268,11 +316,13 @@ public class OnlyHeroSolver implements ProblemSolver {
                     value += Constants.NEAR_HOLE_HUNTER;
                 } else {
                     if (oldHoles == 0) {
-                        value += Constants.NEAR_HUNTER * (4 - newPosition.absDistance(hunterPosition)) / 4;
+                        //value += Constants.NEAR_HUNTER * (4 - newPosition.absDistance(hunterPosition)) / 4;
+                        value -=  hunterValueField.getChecked(newPosition);
                     }
                 }
             } else if (newPosition.absDistance(hunterPosition) < 4) {
-                value += Constants.NEAR_HUNTER * (4 - newPosition.absDistance(hunterPosition)) / 4;
+                value -=  hunterValueField.getChecked(newPosition);
+                //value += Constants.NEAR_HUNTER * (4 - newPosition.absDistance(hunterPosition)) / 4;
             }
         }
         return value;

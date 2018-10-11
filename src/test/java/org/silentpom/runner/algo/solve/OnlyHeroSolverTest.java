@@ -2,6 +2,9 @@ package org.silentpom.runner.algo.solve;
 
 import org.silentpom.runner.algo.estimation.Estimator;
 import org.silentpom.runner.algo.solve.commands.GameCommand;
+import org.silentpom.runner.domain.Constants;
+import org.silentpom.runner.domain.Position;
+import org.silentpom.runner.domain.actors.Hunter;
 import org.silentpom.runner.domain.maps.FullMapInfo;
 import org.silentpom.runner.domain.maps.SimpleMap;
 import org.silentpom.runner.domain.masks.DoubleMask;
@@ -10,6 +13,8 @@ import org.testng.annotations.Test;
 
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collections;
+import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.testng.Assert.*;
@@ -465,6 +470,100 @@ public class OnlyHeroSolverTest {
         }
 
     }
+
+    @Test
+    public void testHunterList() throws Exception {
+        try (
+                InputStream in = this.getClass().getClassLoader()
+                        .getResourceAsStream("hold2.txt");
+                InputStreamReader reader = new InputStreamReader(in, UTF_8)) {
+            SimpleMap simpleMap = SimpleMap.fromFile(reader);
+            simpleMap.print();
+
+            FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
+
+            OnlyHeroSolver heroSolver = new OnlyHeroSolver(8);
+            Position hero = info.getHero();
+            System.out.printf("Hero as bot at: %d %d %n", hero.getRow(), hero.getColumn());
+
+            DoubleMask hunterMatrix = heroSolver.buildHunterValue(
+                    Collections.singletonList(new Hunter(hero)),
+                    info.getClearMap()
+            ).get(0);
+
+            System.out.printf("Matrix at hero %f", hunterMatrix.getChecked(hero));
+
+            assertEquals(
+                    hunterMatrix.getChecked(hero),
+                    -Constants.NEAR_HUNTER,
+                    1e-6
+            );
+
+            assertEquals(
+                    hunterMatrix.getChecked(hero.up()),
+                    -Constants.NEAR_HUNTER * 3 / 4,
+                    1e-6
+            );
+
+            assertEquals(
+                    hunterMatrix.getChecked(hero.right()),
+                    -Constants.NEAR_HUNTER * 3 / 4,
+                    1e-6
+            );
+
+            assertEquals(
+                    hunterMatrix.getChecked(hero.right().right()),
+                    -Constants.NEAR_HUNTER * 2 / 4,
+                    1e-6
+            );
+
+            assertEquals(
+                    hunterMatrix.getChecked(hero.right().right().right()),
+                    -Constants.NEAR_HUNTER * 1 / 4,
+                    1e-6
+            );
+
+            assertEquals(
+                    hunterMatrix.getChecked(hero.right().right().right().right()),
+                    0,
+                    1e-6
+            );
+        }
+    }
+
+    @Test
+    public void testHunterListOnHead() throws Exception {
+        try (
+                InputStream in = this.getClass().getClassLoader()
+                        .getResourceAsStream("stayOnHead.txt");
+                InputStreamReader reader = new InputStreamReader(in, UTF_8)) {
+            SimpleMap simpleMap = SimpleMap.fromFile(reader);
+            simpleMap.print();
+
+            FullMapInfo info = FullMapInfo.buildFromMap(simpleMap);
+
+            OnlyHeroSolver heroSolver = new OnlyHeroSolver(8);
+            Position hero = info.getHero();
+            System.out.printf("Hero as bot at: %d %d %n", hero.getRow(), hero.getColumn());
+
+            DoubleMask hunterMatrix = heroSolver.buildHunterValue(
+                    Collections.singletonList(new Hunter(hero)),
+                    info.getClearMap()
+            ).get(0);
+
+            System.out.printf("Matrix at hero %f", hunterMatrix.getChecked(hero));
+
+            assertEquals(
+                    hunterMatrix.getChecked(hero.up()),
+                    -Constants.NEAR_HUNTER,
+                    1e-6
+            );
+        }
+
+        //stayOnHead.txt
+
+    }
+
 
 
 

@@ -24,6 +24,7 @@ import org.silentpom.runner.domain.maps.CellFilter;
 import org.silentpom.runner.domain.maps.ClearMap;
 import org.silentpom.runner.domain.maps.CommonMap;
 import org.silentpom.runner.domain.maps.FullMapInfo;
+import org.silentpom.runner.domain.masks.DoubleMask;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -44,7 +45,6 @@ public class FullMapAtTime {
     CommonMap heroView;
     List<CommonMap> huntersView;
     List<CommonMap> botsView;
-
 
     public FullMapAtTime(FullMapInfo info) {
         Position center = info.getHero();
