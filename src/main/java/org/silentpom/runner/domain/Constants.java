@@ -10,7 +10,7 @@ public class Constants {
     public static final double VERTICAL_INFLATION = 0.97;
 
     public static final double NEAR_HUNTER = -600;
-    public static final double NEAR_HOLE_HUNTER = 30;
+    public static final double NEAR_HOLE_HUNTER = 50;
 
     public static final double DEADEND_COST = -10000;
 
