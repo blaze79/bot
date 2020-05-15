@@ -38,7 +38,7 @@ import java.util.regex.Pattern;
 import static org.silentpom.runner.algo.solve.commands.DoNothingCommand.DO_NOTHING;
 
 public class RunnerClient {
-    String url = "ws://loderunner.luxoft.com:8080/codenjoy-contest/ws?user=vladislav.kogut@luxoft.com&code=14472771371957506935";
+    String url = "ws://someserver.com:8080/codenjoy-contest/ws?user=user&code=14472771371957506935";
 
     public static Logger LOGGER = LoggerFactory.getLogger(RunnerClient.class);
 

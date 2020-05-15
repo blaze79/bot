@@ -10,7 +10,7 @@
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
         <file>runner_prod_text.log</file>
         <append>true</append>
-        <immediateFlush>true</immediateFlush>
+        <immediateFlush>false</immediateFlush>
 
         <encoder>
             <charset>UTF-8</charset>
@@ -21,7 +21,7 @@
     <appender name="MAP" class="ch.qos.logback.core.FileAppender">
         <file>runner_map.log</file>
         <append>true</append>
-        <immediateFlush>true</immediateFlush>
+        <immediateFlush>false</immediateFlush>
 
         <encoder>
             <charset>UTF-8</charset>
@@ -32,7 +32,7 @@
     <appender name="PREFILTER" class="ch.qos.logback.core.FileAppender">
         <file>runner_filter.log</file>
         <append>true</append>
-        <immediateFlush>true</immediateFlush>
+        <immediateFlush>false</immediateFlush>
 
         <encoder>
             <charset>UTF-8</charset>
@@ -43,7 +43,7 @@
     <appender name="ESTIM" class="ch.qos.logback.core.FileAppender">
         <file>runner_estim.log</file>
         <append>true</append>
-        <immediateFlush>true</immediateFlush>
+        <immediateFlush>false</immediateFlush>
 
         <encoder>
             <charset>UTF-8</charset>
@@ -72,9 +72,6 @@
     <logger level="INFO" name="org.silentpom.runner.algo.estimation.Estimator" additivity="true" >
         <appender-ref ref="ESTIM" />
     </logger>
-
-
-
 
 
 </configuration>
